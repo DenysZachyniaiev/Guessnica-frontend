@@ -70,7 +70,7 @@ const App = () => {
             {windowSize => (
                 <>
                     <Header />
-                    <div className="w-full grid grid-cols-2 items-center px-6 py-4 lg:hidden">
+                    <div className="w-full grid grid-cols-2 items-center dark:bg-slate-900 px-6 py-4 lg:hidden">
 
                         <div className="flex justify-start">
                             <div className="flex items-center gap-2 border border-sky-500 rounded-lg px-3 py-2 text-sm text-slate-700 dark:text-sky-200">
