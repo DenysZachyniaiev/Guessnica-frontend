@@ -72,7 +72,7 @@ const Header = () => {
                                 <Link to="/create-user" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Create User</Link>
                                 <Link to="/create-admin" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Create Admin</Link>
 
-                                <div className="relative text-center">
+                                <div className=" hidden lg:flex relative text-center">
                                     <button
                                         type="button"
                                         onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
@@ -102,7 +102,7 @@ const Header = () => {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-2">
+                                <div className="hidden lg:flex  items-center gap-2 ">
                                     <button
                                         onClick={toggleDarkMode}
                                         className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 rounded flex items-center gap-2"
@@ -119,26 +119,15 @@ const Header = () => {
                                     </button>
                                 </div>
 
-                                <div className="relative text-center">
-                                    <button
-                                        type="button"
-                                        className="dropdown-toggle py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 rounded flex items-center gap-2 w-full text-center"
-                                        onClick={toggleDropdown}
-                                    >
-                                        <p className="text-center w-full pointer-events-none select-none">Dropdown</p>
-                                    </button>
-                                    <div className={`dropdown-menu absolute ${dropdownVisibilityClass} transition-all duration-300 ease-in-out hover:bg-amber-300 bg-sky-700 text-white rounded-b-lg w-48`}>
-                                        <Link to="/settings" className="block px-6 py-2">Settings</Link>
-                                    </div>
-                                </div>
+                         
 
-                                <Link to="/" className="py-2 px-3 block transition-all duration-300 ease-in-out hover:bg-amber-300 rounded">PUSTE</Link>
+                    
                             </div>
                         </div>
 
                         <Link to="/" className="py-5 px-2 flex items-center">
-                            <img 
-                                src="/src/assets/logo_2.png" 
+                            <img
+                                src="../../assets/logo_2.png"
                                 alt="Guessnica" 
                                 className="h-8 w-auto"
                             />
@@ -152,13 +141,7 @@ const Header = () => {
                 id="mobile-menu-dropdown"
                 className={`${mobileMenuHeightClass} overflow-hidden transition-all duration-500 ease-in-out flex-col items-center justify-center bg-sky-800 to-blue-600 navigation-menu md:hidden`}
             >
-                <Link to="/" className="py-3 px-2 flex items-center justify-center">
-                    <img 
-                        src="/src/assets/logo_2.png" 
-                        alt="Guessnica" 
-                        className="h-8 w-auto"
-                    />
-                </Link>
+      
                 <Link to="/" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Home (Content)</Link>
                 <Link to="/guess" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Guess</Link>
                 <Link to="/profile" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Profile</Link>
@@ -167,20 +150,10 @@ const Header = () => {
                 <Link to="/create-user" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Create User</Link>
                 <Link to="/create-admin" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Create Admin</Link>
 
-                <div className="relative text-center w-full">
-                    <button
-                        type="button"
-                        className="dropdown-toggle py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 flex items-center gap-2 w-full text-center justify-center"
-                        onClick={toggleDropdown}
-                    >
-                        <p className="text-center w-full pointer-events-none select-none">Dropdown</p>
-                    </button>
-                    <div className={`dropdown-menu absolute ${dropdownVisibilityClass} transition-all duration-300 ease-in-out hover:bg-amber-300 bg-sky-700 text-white rounded-b-lg w-48 mx-auto right-0 left-0`}>
-                        <Link to="/settings" className="block px-6 py-2">Settings</Link>
-                    </div>
-                </div>
+               
 
-                <Link to="/" className="py-2 px-3 block text-center rounded transition-all duration-300 ease-in-out hover:bg-amber-300">PUSTE</Link>
+              
+                
             </div>
             
             <ThemeCustomizer 
