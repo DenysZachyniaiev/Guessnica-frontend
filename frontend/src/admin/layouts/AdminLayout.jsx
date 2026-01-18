@@ -7,7 +7,7 @@ import AdminLocations from '../pages/AdminLocations';
 import AdminUsers from '../pages/AdminUsers';
 import AdminStats from '../pages/AdminStats';
 import AdminSettings from '../pages/AdminSettings';
-import UserDashboard from '../../UserDashboard';
+import UserDashboard from '../../user/pages/UserDashboard';
 
 export default function AdminLayout() {
     return (

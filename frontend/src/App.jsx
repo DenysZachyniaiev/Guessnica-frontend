@@ -24,7 +24,7 @@ import AdminLocations from './admin/pages/AdminLocations';
 import AdminUsers from './admin/pages/AdminUsers';
 import AdminStats from './admin/pages/AdminStats';
 import AdminSettings from './admin/pages/AdminSettings';
-import UserDashboard from './UserDashboard';
+import UserDashboard from './user/pages/UserDashboard';
 
 const App = () => {
     const [darkMode, setDarkMode] = useState(
