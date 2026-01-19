@@ -13,6 +13,8 @@ import UserSettings from './user/pages/UserSettings';
 import UserLeaderboard from './user/pages/UserLeaderboard';
 import ThemeCustomizer from "./components/common/ThemeCustomizer";
 import ResponsiveWrapper from "./components/common/ResponsiveWrapper";
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import { AuthProvider } from './contexts/AuthContext';
 import { Routes, Route } from 'react-router-dom';
 import { useTranslation } from "react-i18next";
 import i18n from "./i18n";
@@ -66,10 +68,11 @@ const App = () => {
     }, []);
 
     return (
-        <ResponsiveWrapper>
-            {windowSize => (
-                <>
-                    <Header />
+        <AuthProvider>
+            <ResponsiveWrapper>
+                {windowSize => (
+                    <>
+                        <Header />
                     <div className="w-full grid grid-cols-2 items-center dark:bg-slate-900 px-6 py-4 lg:hidden">
 
                         <div className="flex justify-start">
@@ -121,13 +124,13 @@ const App = () => {
                         </div>
                     </div>
 
-                    <Routes>
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="/register" element={<RegisterPage />} />
-                        <Route path="/confirm-email" element={<EmailConfirmationPage />} />
-                        <Route path="/create-admin" element={<AdminUserCreator />} />
-                        <Route path="/create-user" element={<NormalUserCreator />} />
-                        
+                        <Routes>
+                            <Route path="/login" element={<LoginPage />} />
+                            <Route path="/register" element={<RegisterPage />} />
+                            <Route path="/confirm-email" element={<EmailConfirmationPage />} />
+                            <Route path="/create-admin" element={<AdminUserCreator />} />
+                            <Route path="/create-user" element={<NormalUserCreator />} />
+                            
                         <Route path="/" element={<Content />} />
                         <Route path="/guess" element={<Guess />} />
                         <Route path="/profile" element={<Profile />} />
@@ -135,32 +138,33 @@ const App = () => {
                         <Route path="/user-settings" element={<UserSettings />} />
                         <Route path="/leaderboard" element={<UserLeaderboard />} />
 
-                        <Route path="/admin" element={<AdminLayout />}>
-                            <Route index element={<AdminDashboard />} />
-                            <Route path="riddles" element={<AdminRiddles />} />
-                            <Route path="locations" element={<AdminLocations />} />
-                            <Route path="users" element={<AdminUsers />} />
-                            <Route path="stats" element={<AdminStats />} />
-                            <Route path="settings" element={<AdminSettings />} />
-                        </Route>
+                            <Route path="/admin" element={<ProtectedRoute adminOnly={true}><AdminLayout /></ProtectedRoute>}>
+                                <Route index element={<AdminDashboard />} />
+                                <Route path="riddles" element={<AdminRiddles />} />
+                                <Route path="locations" element={<AdminLocations />} />
+                                <Route path="users" element={<AdminUsers />} />
+                                <Route path="stats" element={<AdminStats />} />
+                                <Route path="settings" element={<AdminSettings />} />
+                            </Route>
 
-                        <Route
-                            path="*"
-                            element={
-                                <main className="container mx-auto p-8 text-center text-red-500 text-2xl">
-                                    404 - Page Not Found
-                                </main>
-                            }
+                            <Route
+                                path="*"
+                                element={
+                                    <main className="container mx-auto p-8 text-center text-red-500 text-2xl">
+                                        404 - Page Not Found
+                                    </main>
+                                }
+                            />
+                        </Routes>
+
+                        <ThemeCustomizer 
+                            isOpen={showThemeCustomizer} 
+                            onClose={() => setShowThemeCustomizer(false)} 
                         />
-                    </Routes>
-
-                    <ThemeCustomizer 
-                        isOpen={showThemeCustomizer} 
-                        onClose={() => setShowThemeCustomizer(false)} 
-                    />
-                </>
-            )}
-        </ResponsiveWrapper>
+                    </>
+                )}
+            </ResponsiveWrapper>
+        </AuthProvider>
     );
 };
 

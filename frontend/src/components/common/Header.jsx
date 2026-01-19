@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../contexts/AuthContext';
 import ThemeCustomizer from './ThemeCustomizer';
 
 const Header = () => {
@@ -10,6 +11,7 @@ const Header = () => {
     const [darkMode, setDarkMode] = useState(false);
     const [showThemeCustomizer, setShowThemeCustomizer] = useState(false);
     const { t, i18n } = useTranslation();
+    const { user, isAuthenticated, isAdmin, logout } = useAuth();
 
     useEffect(() => {
         const isDark = localStorage.getItem('theme') === 'dark';
@@ -64,13 +66,33 @@ const Header = () => {
                             </div>
 
                             <div className="hidden flex-row items-center justify-start navigation-menu-bar md:flex">
-                                <Link to="/" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Home (Content)</Link>
-                                <Link to="/guess" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Guess</Link>
-                                <Link to="/profile" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Profile</Link>
-                                <Link to="/user-panel" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">User Panel</Link>
-                                <Link to="/leaderboard" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Leaderboard</Link>
-                                <Link to="/create-user" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Create User</Link>
-                                <Link to="/create-admin" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Create Admin</Link>
+                                {isAuthenticated ? (
+                                    <>
+                                        <Link to="/" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Home</Link>
+                                        <Link to="/guess" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Guess</Link>
+                                        <Link to="/profile" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Profile</Link>
+                                        <Link to="/user-panel" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">User Panel</Link>
+                                        <Link to="/leaderboard" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Leaderboard</Link>
+                                        {isAdmin && (
+                                            <>
+                                                <Link to="/admin" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-red-300 bg-red-600">Admin Panel</Link>
+                                                <Link to="/create-user" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Create User</Link>
+                                                <Link to="/create-admin" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Create Admin</Link>
+                                            </>
+                                        )}
+                                        <button
+                                            onClick={logout}
+                                            className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-red-300 bg-red-500 text-white"
+                                        >
+                                            Logout
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Link to="/login" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Login</Link>
+                                        <Link to="/register" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Register</Link>
+                                    </>
+                                )}
 
                                 <div className=" hidden lg:flex relative text-center">
                                     <button
@@ -141,19 +163,33 @@ const Header = () => {
                 id="mobile-menu-dropdown"
                 className={`${mobileMenuHeightClass} overflow-hidden transition-all duration-500 ease-in-out flex-col items-center justify-center bg-sky-800 to-blue-600 navigation-menu md:hidden`}
             >
-      
-                <Link to="/" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Home (Content)</Link>
-                <Link to="/guess" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Guess</Link>
-                <Link to="/profile" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Profile</Link>
-                <Link to="/user-panel" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">User Panel</Link>
-                <Link to="/leaderboard" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Leaderboard</Link>
-                <Link to="/create-user" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Create User</Link>
-                <Link to="/create-admin" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Create Admin</Link>
-
-               
-
-              
-                
+                {isAuthenticated ? (
+                    <>
+                        <Link to="/" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Home</Link>
+                        <Link to="/guess" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Guess</Link>
+                        <Link to="/profile" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Profile</Link>
+                        <Link to="/user-panel" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">User Panel</Link>
+                        <Link to="/leaderboard" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Leaderboard</Link>
+                        {isAdmin && (
+                            <>
+                                <Link to="/admin" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-red-300 block rounded text-center bg-red-600">Admin Panel</Link>
+                                <Link to="/create-user" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Create User</Link>
+                                <Link to="/create-admin" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Create Admin</Link>
+                            </>
+                        )}
+                        <button
+                            onClick={logout}
+                            className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-red-300 block rounded text-center bg-red-500 text-white w-full max-w-xs"
+                        >
+                            Logout
+                        </button>
+                    </>
+                ) : (
+                    <>
+                        <Link to="/login" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Login</Link>
+                        <Link to="/register" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Register</Link>
+                    </>
+                )}
             </div>
             
             <ThemeCustomizer 
