@@ -128,15 +128,15 @@ const App = () => {
                             <Route path="/login" element={<LoginPage />} />
                             <Route path="/register" element={<RegisterPage />} />
                             <Route path="/confirm-email" element={<EmailConfirmationPage />} />
-                            <Route path="/create-admin" element={<AdminUserCreator />} />
-                            <Route path="/create-user" element={<NormalUserCreator />} />
+                            <Route path="/create-admin" element={<ProtectedRoute adminOnly={true}><AdminUserCreator /></ProtectedRoute>} />
+                            <Route path="/create-user" element={<ProtectedRoute adminOnly={true}><NormalUserCreator /></ProtectedRoute>} />
                             
-                        <Route path="/" element={<Content />} />
-                        <Route path="/guess" element={<Guess />} />
-                        <Route path="/profile" element={<Profile />} />
-                        <Route path="/user-panel" element={<UserPanel />} />
-                        <Route path="/user-settings" element={<UserSettings />} />
-                        <Route path="/leaderboard" element={<UserLeaderboard />} />
+                            <Route path="/" element={<ProtectedRoute><Content /></ProtectedRoute>} />
+                            <Route path="/guess" element={<ProtectedRoute><Guess /></ProtectedRoute>} />
+                            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                            <Route path="/user-panel" element={<ProtectedRoute><UserPanel /></ProtectedRoute>} />
+                            <Route path="/user-settings" element={<ProtectedRoute><UserSettings /></ProtectedRoute>} />
+                            <Route path="/leaderboard" element={<UserLeaderboard />} />
 
                             <Route path="/admin" element={<ProtectedRoute adminOnly={true}><AdminLayout /></ProtectedRoute>}>
                                 <Route index element={<AdminDashboard />} />

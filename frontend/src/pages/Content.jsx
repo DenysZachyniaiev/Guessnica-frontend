@@ -51,7 +51,7 @@ export default function Content() {
         };
 
         fetchData();
-    }, [navigate]);
+    }, [isAuthenticated, navigate]);
 
     const handlePlayRiddle = () => {
         if (todayRiddle) {

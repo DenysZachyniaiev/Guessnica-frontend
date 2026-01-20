@@ -68,18 +68,27 @@ const Header = () => {
                             <div className="hidden flex-row items-center justify-start navigation-menu-bar md:flex">
                                 {isAuthenticated ? (
                                     <>
+                                        {/* User Navigation */}
                                         <Link to="/" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Home</Link>
-                                        <Link to="/guess" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Guess</Link>
-                                        <Link to="/profile" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Profile</Link>
-                                        <Link to="/user-panel" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">User Panel</Link>
-                                        <Link to="/leaderboard" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Leaderboard</Link>
+                                        <Link to="/guess" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Play Game</Link>
+                                        <Link to="/profile" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">My Profile</Link>
+                                        <Link to="/user-panel" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Dashboard</Link>
+                                        
+                                        {/* Admin Navigation */}
                                         {isAdmin && (
                                             <>
-                                                <Link to="/admin" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-red-300 bg-red-600">Admin Panel</Link>
+                                                <span className="mx-2 text-gray-400">|</span>
+                                                <Link to="/admin" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-red-300 bg-red-600 text-white">Admin Panel</Link>
+                                                <Link to="/admin/riddles" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Riddles</Link>
+                                                <Link to="/admin/locations" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Locations</Link>
+                                                <Link to="/admin/users" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Users</Link>
+                                                <Link to="/admin/settings" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Settings</Link>
                                                 <Link to="/create-user" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Create User</Link>
                                                 <Link to="/create-admin" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Create Admin</Link>
                                             </>
                                         )}
+                                        
+                                        <span className="mx-2 text-gray-400">|</span>
                                         <button
                                             onClick={logout}
                                             className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-red-300 bg-red-500 text-white"
@@ -93,6 +102,10 @@ const Header = () => {
                                         <Link to="/register" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Register</Link>
                                     </>
                                 )}
+                                
+                                {/* Public Navigation - Always Visible */}
+                                <span className="mx-2 text-gray-400">|</span>
+                                <Link to="/leaderboard" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">🏆 Leaderboard</Link>
 
                                 <div className=" hidden lg:flex relative text-center">
                                     <button
@@ -165,18 +178,27 @@ const Header = () => {
             >
                 {isAuthenticated ? (
                     <>
+                        {/* User Navigation */}
                         <Link to="/" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Home</Link>
-                        <Link to="/guess" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Guess</Link>
-                        <Link to="/profile" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Profile</Link>
-                        <Link to="/user-panel" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">User Panel</Link>
-                        <Link to="/leaderboard" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Leaderboard</Link>
+                        <Link to="/guess" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Play Game</Link>
+                        <Link to="/profile" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">My Profile</Link>
+                        <Link to="/user-panel" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Dashboard</Link>
+                        
+                        {/* Admin Navigation */}
                         {isAdmin && (
                             <>
-                                <Link to="/admin" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-red-300 block rounded text-center bg-red-600">Admin Panel</Link>
+                                <div className="w-full border-t border-gray-600 my-2"></div>
+                                <Link to="/admin" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-red-300 block rounded text-center bg-red-600 text-white">Admin Panel</Link>
+                                <Link to="/admin/riddles" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Riddles</Link>
+                                <Link to="/admin/locations" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Locations</Link>
+                                <Link to="/admin/users" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Users</Link>
+                                <Link to="/admin/settings" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Settings</Link>
                                 <Link to="/create-user" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Create User</Link>
                                 <Link to="/create-admin" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Create Admin</Link>
                             </>
                         )}
+                        
+                        <div className="w-full border-t border-gray-600 my-2"></div>
                         <button
                             onClick={logout}
                             className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-red-300 block rounded text-center bg-red-500 text-white w-full max-w-xs"
@@ -190,6 +212,10 @@ const Header = () => {
                         <Link to="/register" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Register</Link>
                     </>
                 )}
+                
+                {/* Public Navigation - Always Visible */}
+                <div className="w-full border-t border-gray-600 my-2"></div>
+                <Link to="/leaderboard" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">🏆 Leaderboard</Link>
             </div>
             
             <ThemeCustomizer 
