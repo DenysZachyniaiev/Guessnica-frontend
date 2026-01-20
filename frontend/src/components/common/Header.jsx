@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../contexts/AuthContext';
 import ThemeCustomizer from './ThemeCustomizer';
 
 const Header = () => {
@@ -10,6 +11,7 @@ const Header = () => {
     const [darkMode, setDarkMode] = useState(false);
     const [showThemeCustomizer, setShowThemeCustomizer] = useState(false);
     const { t, i18n } = useTranslation();
+    const { user, isAuthenticated, isAdmin, logout } = useAuth();
 
     useEffect(() => {
         const isDark = localStorage.getItem('theme') === 'dark';
@@ -64,15 +66,48 @@ const Header = () => {
                             </div>
 
                             <div className="hidden flex-row items-center justify-start navigation-menu-bar md:flex">
-                                <Link to="/" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Home (Content)</Link>
-                                <Link to="/guess" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Guess</Link>
-                                <Link to="/profile" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Profile</Link>
-                                <Link to="/user-panel" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">User Panel</Link>
-                                <Link to="/leaderboard" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Leaderboard</Link>
-                                <Link to="/create-user" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Create User</Link>
-                                <Link to="/create-admin" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Create Admin</Link>
+                                {isAuthenticated ? (
+                                    <>
+                                        {/* User Navigation */}
+                                        <Link to="/" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Home</Link>
+                                        <Link to="/guess" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Play Game</Link>
+                                        <Link to="/profile" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">My Profile</Link>
+                                        <Link to="/user-panel" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Dashboard</Link>
+                                        
+                                        {/* Admin Navigation */}
+                                        {isAdmin && (
+                                            <>
+                                                <span className="mx-2 text-gray-400">|</span>
+                                                <Link to="/admin" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-red-300 bg-red-600 text-white">Admin Panel</Link>
+                                                <Link to="/admin/riddles" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Riddles</Link>
+                                                <Link to="/admin/locations" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Locations</Link>
+                                                <Link to="/admin/users" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Users</Link>
+                                                <Link to="/admin/settings" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Settings</Link>
+                                                <Link to="/create-user" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Create User</Link>
+                                                <Link to="/create-admin" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Create Admin</Link>
+                                            </>
+                                        )}
+                                        
+                                        <span className="mx-2 text-gray-400">|</span>
+                                        <button
+                                            onClick={logout}
+                                            className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-red-300 bg-red-500 text-white"
+                                        >
+                                            Logout
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Link to="/login" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Login</Link>
+                                        <Link to="/register" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">Register</Link>
+                                    </>
+                                )}
+                                
+                                {/* Public Navigation - Always Visible */}
+                                <span className="mx-2 text-gray-400">|</span>
+                                <Link to="/leaderboard" className="py-2 px-3 block rounded transition-all duration-300 ease-in-out hover:bg-amber-300">🏆 Leaderboard</Link>
 
-                                <div className="relative text-center">
+                                <div className=" hidden lg:flex relative text-center">
                                     <button
                                         type="button"
                                         onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
@@ -102,7 +137,7 @@ const Header = () => {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-2">
+                                <div className="hidden lg:flex  items-center gap-2 ">
                                     <button
                                         onClick={toggleDarkMode}
                                         className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 rounded flex items-center gap-2"
@@ -119,26 +154,15 @@ const Header = () => {
                                     </button>
                                 </div>
 
-                                <div className="relative text-center">
-                                    <button
-                                        type="button"
-                                        className="dropdown-toggle py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 rounded flex items-center gap-2 w-full text-center"
-                                        onClick={toggleDropdown}
-                                    >
-                                        <p className="text-center w-full pointer-events-none select-none">Dropdown</p>
-                                    </button>
-                                    <div className={`dropdown-menu absolute ${dropdownVisibilityClass} transition-all duration-300 ease-in-out hover:bg-amber-300 bg-sky-700 text-white rounded-b-lg w-48`}>
-                                        <Link to="/settings" className="block px-6 py-2">Settings</Link>
-                                    </div>
-                                </div>
+                         
 
-                                <Link to="/" className="py-2 px-3 block transition-all duration-300 ease-in-out hover:bg-amber-300 rounded">PUSTE</Link>
+                    
                             </div>
                         </div>
 
                         <Link to="/" className="py-5 px-2 flex items-center">
-                            <img 
-                                src="/src/assets/logo_2.png" 
+                            <img
+                                src="../../assets/logo_2.png"
                                 alt="Guessnica" 
                                 className="h-8 w-auto"
                             />
@@ -152,35 +176,46 @@ const Header = () => {
                 id="mobile-menu-dropdown"
                 className={`${mobileMenuHeightClass} overflow-hidden transition-all duration-500 ease-in-out flex-col items-center justify-center bg-sky-800 to-blue-600 navigation-menu md:hidden`}
             >
-                <Link to="/" className="py-3 px-2 flex items-center justify-center">
-                    <img 
-                        src="/src/assets/logo_2.png" 
-                        alt="Guessnica" 
-                        className="h-8 w-auto"
-                    />
-                </Link>
-                <Link to="/" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Home (Content)</Link>
-                <Link to="/guess" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Guess</Link>
-                <Link to="/profile" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Profile</Link>
-                <Link to="/user-panel" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">User Panel</Link>
-                <Link to="/leaderboard" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Leaderboard</Link>
-                <Link to="/create-user" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Create User</Link>
-                <Link to="/create-admin" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Create Admin</Link>
-
-                <div className="relative text-center w-full">
-                    <button
-                        type="button"
-                        className="dropdown-toggle py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 flex items-center gap-2 w-full text-center justify-center"
-                        onClick={toggleDropdown}
-                    >
-                        <p className="text-center w-full pointer-events-none select-none">Dropdown</p>
-                    </button>
-                    <div className={`dropdown-menu absolute ${dropdownVisibilityClass} transition-all duration-300 ease-in-out hover:bg-amber-300 bg-sky-700 text-white rounded-b-lg w-48 mx-auto right-0 left-0`}>
-                        <Link to="/settings" className="block px-6 py-2">Settings</Link>
-                    </div>
-                </div>
-
-                <Link to="/" className="py-2 px-3 block text-center rounded transition-all duration-300 ease-in-out hover:bg-amber-300">PUSTE</Link>
+                {isAuthenticated ? (
+                    <>
+                        {/* User Navigation */}
+                        <Link to="/" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Home</Link>
+                        <Link to="/guess" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Play Game</Link>
+                        <Link to="/profile" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">My Profile</Link>
+                        <Link to="/user-panel" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Dashboard</Link>
+                        
+                        {/* Admin Navigation */}
+                        {isAdmin && (
+                            <>
+                                <div className="w-full border-t border-gray-600 my-2"></div>
+                                <Link to="/admin" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-red-300 block rounded text-center bg-red-600 text-white">Admin Panel</Link>
+                                <Link to="/admin/riddles" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Riddles</Link>
+                                <Link to="/admin/locations" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Locations</Link>
+                                <Link to="/admin/users" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Users</Link>
+                                <Link to="/admin/settings" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Settings</Link>
+                                <Link to="/create-user" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Create User</Link>
+                                <Link to="/create-admin" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Create Admin</Link>
+                            </>
+                        )}
+                        
+                        <div className="w-full border-t border-gray-600 my-2"></div>
+                        <button
+                            onClick={logout}
+                            className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-red-300 block rounded text-center bg-red-500 text-white w-full max-w-xs"
+                        >
+                            Logout
+                        </button>
+                    </>
+                ) : (
+                    <>
+                        <Link to="/login" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Login</Link>
+                        <Link to="/register" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">Register</Link>
+                    </>
+                )}
+                
+                {/* Public Navigation - Always Visible */}
+                <div className="w-full border-t border-gray-600 my-2"></div>
+                <Link to="/leaderboard" className="py-2 px-3 transition-all duration-300 ease-in-out hover:bg-amber-300 block rounded text-center">🏆 Leaderboard</Link>
             </div>
             
             <ThemeCustomizer 

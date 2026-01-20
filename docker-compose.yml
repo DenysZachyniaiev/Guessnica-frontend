@@ -5,3 +5,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5173:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # Crucial for Linux/Docker connection
+    environment:
+      - NODE_ENV=production
