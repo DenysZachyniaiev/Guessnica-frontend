@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function LoginPage() {
+export default function LoginPage({ setIsLoggedIn }) {  // ← Dodaj prop
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -25,7 +25,13 @@ export default function LoginPage() {
             const data = await response.json();
 
             if (response.ok) {
-                localStorage.setItem('jwt', data.token);
+                // Użyj 'token' zamiast 'jwt' aby zgadzało się z App.jsx
+                localStorage.setItem('token', data.token);
+
+                // Zaktualizuj stan zalogowania
+                setIsLoggedIn(true);
+
+                // Przekieruj na stronę główną
                 navigate('/');
             } else {
                 setError(data.message || 'Login failed');
@@ -37,8 +43,18 @@ export default function LoginPage() {
         }
     };
 
-    const handleFacebookLogin = () => {
-        window.location.href = '/auth/facebook';
+    const handleFacebookLogin = async () => {
+        try {
+            const response = await fetch('/auth/facebook', { method: 'POST' });
+            if (response.ok) {
+                const data = await response.json();
+                window.location.href = data.redirectUrl;
+            } else {
+                console.error("Facebook login failed");
+            }
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     return (
