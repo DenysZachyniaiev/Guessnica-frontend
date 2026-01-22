@@ -19,7 +19,7 @@ export default function EmailConfirmationPage() {
             }
 
             try {
-                const response = await fetch(`/auth/confirm-email?userId=${userId}&token=${token}`);
+                const response = await fetch(`/auth/confirm-email?userId=${userId}&token=${encodeURIComponent(token)}`);
                 const data = await response.json();
 
                 if (response.ok) {

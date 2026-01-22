@@ -53,7 +53,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between w-full">
                         {/* Logo */}
-                        <Link to="/" className="py-4 px-2 flex items-center gap-2 hover:opacity-80 transition-opacity">
+                        <Link to="/welcome" className="py-4 px-2 flex items-center gap-2 hover:opacity-80 transition-opacity">
                             <span className="text-xl font-bold tracking-wide">Guessnica</span>
                         </Link>
 
@@ -61,7 +61,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                         <div className="hidden md:flex flex-row items-center justify-end navigation-menu-bar gap-2">
                             {isLoggedIn ? (
                                 <>
-                                    <Link to="/" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">Home</Link>
+                                    <Link to="/welcome" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">Home</Link>
                                     <Link to="/guess" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">Guess</Link>
                                     <Link to="/profile" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">Profile</Link>
                                     <Link to="/user-panel" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">User Panel</Link>

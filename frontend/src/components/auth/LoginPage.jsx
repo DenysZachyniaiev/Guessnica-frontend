@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function LoginPage({ setIsLoggedIn }) {  // ← Dodaj prop
+export default function LoginPage({ setIsLoggedIn }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -25,14 +25,9 @@ export default function LoginPage({ setIsLoggedIn }) {  // ← Dodaj prop
             const data = await response.json();
 
             if (response.ok) {
-                // Użyj 'token' zamiast 'jwt' aby zgadzało się z App.jsx
                 localStorage.setItem('token', data.token);
-
-                // Zaktualizuj stan zalogowania
                 setIsLoggedIn(true);
-
-                // Przekieruj na stronę główną
-                navigate('/');
+                navigate('/welcome');
             } else {
                 setError(data.message || 'Login failed');
             }
