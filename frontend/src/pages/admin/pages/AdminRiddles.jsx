@@ -38,6 +38,40 @@ export default function AdminRiddles() {
         }
     };
 
+    const handleSave = async (ev) => {
+        ev.preventDefault();
+        const form = ev.target.elements;
+        const payload = {
+            imageUrl: form.imageUrl.value || null,
+            locationId: form.locationId.value || null,
+            difficulty: form.difficulty.value || 'Medium',
+            points: Number(form.points.value) || 0,
+            maxDistanceMeters: Number(form.maxDistanceMeters.value) || 100
+        };
+
+        try {
+            if (editingRiddle && editingRiddle.id) {
+                await fetch(`/admin/riddles/${editingRiddle.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('jwt')}` },
+                    body: JSON.stringify(payload)
+                });
+            } else {
+                await fetch('/admin/riddles', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('jwt')}` },
+                    body: JSON.stringify(payload)
+                });
+            }
+            setShowModal(false);
+            setEditingRiddle(null);
+            fetchRiddles();
+        } catch (e) {
+            console.error('Failed to save riddle', e);
+            alert('Failed to save riddle');
+        }
+    };
+
     const getDifficultyColor = (difficulty) => {
         switch (difficulty) {
             case 'Easy': return 'bg-green-100 text-green-800';
@@ -163,29 +197,40 @@ export default function AdminRiddles() {
                         <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
                             {editingRiddle ? 'Edit Riddle' : 'Add New Riddle'}
                         </h3>
-                        <div className="text-gray-500 dark:text-gray-400">
-                            Riddle form would be implemented here with image upload, location selection, etc.
-                        </div>
-                        <div className="mt-4 flex justify-end space-x-3">
-                            <button
-                                onClick={() => {
-                                    setShowModal(false);
-                                    setEditingRiddle(null);
-                                }}
-                                className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setShowModal(false);
-                                    setEditingRiddle(null);
-                                }}
-                                className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700"
-                            >
-                                Save
-                            </button>
-                        </div>
+
+                        <form onSubmit={handleSave} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                                <input name="imageUrl" defaultValue={editingRiddle?.imageUrl || ''} className="w-full px-3 py-2 border rounded" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Location ID</label>
+                                <input name="locationId" defaultValue={editingRiddle?.locationId || ''} className="w-full px-3 py-2 border rounded" />
+                            </div>
+                            <div className="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Difficulty</label>
+                                    <select name="difficulty" defaultValue={editingRiddle?.difficulty || 'Medium'} className="w-full px-2 py-2 border rounded">
+                                        <option>Easy</option>
+                                        <option>Medium</option>
+                                        <option>Hard</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Points</label>
+                                    <input name="points" defaultValue={editingRiddle?.points ?? 0} className="w-full px-3 py-2 border rounded" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Max distance (m)</label>
+                                    <input name="maxDistanceMeters" defaultValue={editingRiddle?.maxDistanceMeters ?? 100} className="w-full px-3 py-2 border rounded" />
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end space-x-3">
+                                <button type="button" onClick={() => { setShowModal(false); setEditingRiddle(null); }} className="px-4 py-2 border rounded">Cancel</button>
+                                <button type="submit" className="px-4 py-2 bg-sky-600 text-white rounded">Save</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}

@@ -136,7 +136,6 @@ export default function AdminDashboard() {
                         Quick Actions
                     </h2>
                     <div className="space-y-3">
-                        {/* Use navigate to ensure routing works reliably inside admin layout */}
                         <QuickAction to="/admin/riddles" bg="bg-sky-50 dark:bg-sky-900/20" title="Add New Riddle" subtitle="Upload a new photo riddle" />
                         <QuickAction to="/admin/locations" bg="bg-orange-50 dark:bg-orange-900/20" title="Manage Locations" subtitle="Add and manage game locations" />
                         <QuickAction to="/admin/settings" bg="bg-indigo-50 dark:bg-indigo-900/20" title="Settings" subtitle="Game and system settings" />

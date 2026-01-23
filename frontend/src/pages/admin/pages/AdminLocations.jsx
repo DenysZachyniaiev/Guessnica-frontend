@@ -38,6 +38,40 @@ export default function AdminLocations() {
         }
     };
 
+    const handleSave = async (ev) => {
+        ev.preventDefault();
+        const form = ev.target.elements;
+        const payload = {
+            name: form.name.value,
+            description: form.description.value,
+            latitude: Number(form.latitude.value) || null,
+            longitude: Number(form.longitude.value) || null,
+            imageUrl: form.imageUrl.value || null
+        };
+
+        try {
+            if (editingLocation && editingLocation.id) {
+                await fetch(`/admin/locations/${editingLocation.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('jwt')}` },
+                    body: JSON.stringify(payload)
+                });
+            } else {
+                await fetch('/admin/locations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('jwt')}` },
+                    body: JSON.stringify(payload)
+                });
+            }
+            setShowModal(false);
+            setEditingLocation(null);
+            fetchLocations();
+        } catch (e) {
+            console.error('Failed to save location', e);
+            alert('Failed to save location');
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
@@ -144,29 +178,36 @@ export default function AdminLocations() {
                         <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
                             {editingLocation ? 'Edit Location' : 'Add New Location'}
                         </h3>
-                        <div className="text-gray-500 dark:text-gray-400">
-                            Location form would be implemented here with image upload, coordinates, etc.
-                        </div>
-                        <div className="mt-4 flex justify-end space-x-3">
-                            <button
-                                onClick={() => {
-                                    setShowModal(false);
-                                    setEditingLocation(null);
-                                }}
-                                className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setShowModal(false);
-                                    setEditingLocation(null);
-                                }}
-                                className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700"
-                            >
-                                Save
-                            </button>
-                        </div>
+
+                        <form onSubmit={handleSave} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                <input name="name" defaultValue={editingLocation?.name || ''} required className="w-full px-3 py-2 border rounded" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <textarea name="description" defaultValue={editingLocation?.description || ''} className="w-full px-3 py-2 border rounded" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
+                                    <input name="latitude" defaultValue={editingLocation?.latitude ?? ''} className="w-full px-3 py-2 border rounded" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
+                                    <input name="longitude" defaultValue={editingLocation?.longitude ?? ''} className="w-full px-3 py-2 border rounded" />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                                <input name="imageUrl" defaultValue={editingLocation?.imageUrl || ''} className="w-full px-3 py-2 border rounded" />
+                            </div>
+
+                            <div className="flex justify-end space-x-3">
+                                <button type="button" onClick={() => { setShowModal(false); setEditingLocation(null); }} className="px-4 py-2 border rounded">Cancel</button>
+                                <button type="submit" className="px-4 py-2 bg-sky-600 text-white rounded">Save</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
