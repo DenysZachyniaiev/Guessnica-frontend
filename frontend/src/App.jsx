@@ -3,29 +3,29 @@ import Header from './components/common/Header';
 import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
 import EmailConfirmationPage from './components/auth/EmailConfirmationPage';
-import AdminUserCreator from './components/auth/AdminUserCreator';
-import NormalUserCreator from './components/auth/NormalUserCreator';
+/*import AdminUserCreator from './components/auth/AdminUserCreator';*/
+
 import Guess from "./components/game/Guess";
-import Content from './pages/Content';
 import Welcome from './pages/Welcome';
-import Profile from "./pages/Profile";
-import UserPanel from './user/pages/UserPanel';
-import UserSettings from './user/pages/UserSettings';
-import UserLeaderboard from './user/pages/UserLeaderboard';
 import ThemeCustomizer from "./components/common/ThemeCustomizer";
 import ResponsiveWrapper from "./components/common/ResponsiveWrapper";
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useTranslation } from "react-i18next";
 import i18n from "./i18n";
 
-import AdminLayout from './admin/layouts/AdminLayout';
-import AdminDashboard from './admin/pages/AdminDashboard';
-import AdminRiddles from './admin/pages/AdminRiddles';
-import AdminLocations from './admin/pages/AdminLocations';
-import AdminUsers from './admin/pages/AdminUsers';
-import AdminStats from './admin/pages/AdminStats';
-import AdminSettings from './admin/pages/AdminSettings';
-import UserDashboard from './user/pages/UserDashboard';
+import UserPanel from './pages/user/UserPanel';
+import UserSettings from './pages/user/UserSettings';
+import UserLeaderboard from './pages/user/UserLeaderboard';
+/*import UserDashboard from './pages/user/UserDashboard';*/
+
+import AdminLayout from './pages/admin/layouts/AdminLayout';
+/*import AdminPanel from './pages/admin/AdminPanel';*/
+import AdminDashboard from './pages/admin/pages/AdminDashboard';
+import AdminRiddles from './pages/admin/pages/AdminRiddles';
+import AdminLocations from './pages/admin/pages/AdminLocations';
+import AdminUsers from './pages/admin/pages/AdminUsers';
+import AdminStats from './pages/admin/pages/AdminStats';
+import AdminSettings from './pages/admin/pages/AdminSettings';
 
 const App = () => {
     const [darkMode, setDarkMode] = useState(
@@ -41,7 +41,7 @@ const App = () => {
         localStorage.setItem("lang", lang);
     };
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('jwt');
         setIsLoggedIn(!!token);
     }, []);
 
@@ -55,7 +55,6 @@ const App = () => {
             localStorage.setItem('theme', 'light');
         }
     }, [darkMode]);
-
     useEffect(() => {
         const savedTheme = localStorage.getItem('selectedTheme');
         if (savedTheme && savedTheme !== 'default') {
@@ -73,7 +72,6 @@ const App = () => {
 
     return (
         <ResponsiveWrapper>
-            {windowSize => (
                 <>
                     <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
 
@@ -85,15 +83,12 @@ const App = () => {
                         <Route path="/confirm-email" element={<EmailConfirmationPage />} />
                         {/* Chronione strony - tylko dla zalogowanych */}
                         <Route path="/guess" element={isLoggedIn ? <Guess /> : <Navigate to="/login" />} />
-                        <Route path="/profile" element={isLoggedIn ? <Profile /> : <Navigate to="/login" />} />
                         <Route path="/user-panel" element={isLoggedIn ? <UserPanel /> : <Navigate to="/login" />} />
                         <Route path="/user-settings" element={isLoggedIn ? <UserSettings /> : <Navigate to="/login" />} />
                         <Route path="/leaderboard" element={isLoggedIn ? <UserLeaderboard /> : <Navigate to="/login" />} />
-                        <Route path="/create-admin" element={isLoggedIn ? <AdminUserCreator /> : <Navigate to="/login" />} />
-                        <Route path="/create-user" element={isLoggedIn ? <NormalUserCreator /> : <Navigate to="/login" />} />
 
                         {/* Przekierowanie głównej strony */}
-                        <Route path="/" element={isLoggedIn ? <Content /> : <Navigate to="/welcome" />} />
+                        <Route path="/" element={isLoggedIn ? <Welcome/> : <Navigate to="/welcome" />} />
                         
                         {/* Admin routes */}
                         <Route path="/admin" element={isLoggedIn ? <AdminLayout /> : <Navigate to="/login" />}>
@@ -120,7 +115,6 @@ const App = () => {
                         onClose={() => setShowThemeCustomizer(false)}
                     />
                 </>
-            )}
         </ResponsiveWrapper>
     );
 };

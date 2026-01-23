@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ThemeCustomizer from './ThemeCustomizer';
-import logoImg from '../../assets/logo.png';
 
 const Header = ({ isLoggedIn, setIsLoggedIn }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -34,7 +33,8 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
+        localStorage.removeItem('jwt');
+        localStorage.removeItem('jwt_expires');
         setIsLoggedIn(false);
         setIsMobileMenuOpen(false);
         setIsDropdownOpen(false);
@@ -53,21 +53,17 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between w-full">
                         {/* Logo */}
-                        <Link to="/" className="py-4 px-2 flex items-center gap-2 hover:opacity-80 transition-opacity">
+                        <Link to="/welcomeloggedin" className="py-4 px-2 flex items-center gap-2 hover:opacity-80 transition-opacity">
                             <span className="text-xl font-bold tracking-wide">Guessnica</span>
                         </Link>
 
-                        {/* Desktop Menu */}
+                        {/* Desktop Menu  <Link to="/create-admin" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">Create Admin</Link>*/}
                         <div className="hidden md:flex flex-row items-center justify-end navigation-menu-bar gap-2">
                             {isLoggedIn ? (
                                 <>
-                                    <Link to="/" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">Home</Link>
                                     <Link to="/guess" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">Guess</Link>
-                                    <Link to="/profile" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">Profile</Link>
                                     <Link to="/user-panel" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">User Panel</Link>
                                     <Link to="/leaderboard" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">Leaderboard</Link>
-                                    <Link to="/create-user" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">Create User</Link>
-                                    <Link to="/create-admin" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">Create Admin</Link>
                                 </>
                             ) : (
                                 <Link to="/login" className="py-2.5 px-6 text-sm font-bold bg-white text-sky-600 rounded-lg hover:bg-gray-100 transition-all duration-200 shadow-md">
@@ -108,17 +104,17 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                         </div>
                                         <div className="relative bg-white/10 rounded-full p-1 flex items-center">
                                             <div className={`absolute top-1 left-1 w-[calc(50%-0.25rem)] h-[calc(100%-0.5rem)] bg-white rounded-full transition-transform duration-300 ${darkMode ? 'translate-x-full' : 'translate-x-0'}`}></div>
-                                            <button onClick={() => darkMode && toggleDarkMode()} className={`flex-1 py-2 z-10 text-sm font-medium ${!darkMode ? 'text-sky-600' : 'text-white'}`}>☀️ Light</button>
-                                            <button onClick={() => !darkMode && toggleDarkMode()} className={`flex-1 py-2 z-10 text-sm font-medium ${darkMode ? 'text-sky-600' : 'text-white'}`}>🌙 Dark</button>
+                                            <button onClick={() => darkMode && toggleDarkMode()} className={`flex-1 py-2 z-10 text-sm font-medium ${!darkMode ? 'text-sky-600' : 'text-white'}`}>Light</button>
+                                            <button onClick={() => !darkMode && toggleDarkMode()} className={`flex-1 py-2 z-10 text-sm font-medium ${darkMode ? 'text-sky-600' : 'text-white'}`}>Dark</button>
                                         </div>
                                         <button onClick={() => { setShowThemeCustomizer(true); setIsDropdownOpen(false); }} className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 rounded-lg text-sm">
-                                            <span>🎨</span><span>Customize Theme</span>
+                                            <span></span><span>Customize Theme</span>
                                         </button>
                                     </div>
 
                                     {isLoggedIn && (
                                         <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 px-5 py-4 hover:bg-red-500/90 text-sm font-medium mt-1">
-                                            <span>🚪</span><span>Logout</span>
+                                            <span></span><span>Logout</span>
                                         </button>
                                     )}
                                 </div>
@@ -145,11 +141,8 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                     <>
                         <Link to="/" className="py-2.5 px-4 m-1 text-sm font-medium block text-center w-11/12 hover:bg-white/10 rounded-lg">Home</Link>
                         <Link to="/guess" className="py-2.5 px-4 m-1 text-sm font-medium block text-center w-11/12 hover:bg-white/10 rounded-lg">Guess</Link>
-                        <Link to="/profile" className="py-2.5 px-4 m-1 text-sm font-medium block text-center w-11/12 hover:bg-white/10 rounded-lg">Profile</Link>
                         <Link to="/user-panel" className="py-2.5 px-4 m-1 text-sm font-medium block text-center w-11/12 hover:bg-white/10 rounded-lg">User Panel</Link>
                         <Link to="/leaderboard" className="py-2.5 px-4 m-1 text-sm font-medium block text-center w-11/12 hover:bg-white/10 rounded-lg">Leaderboard</Link>
-                        <Link to="/create-user" className="py-2.5 px-4 m-1 text-sm font-medium block text-center w-11/12 hover:bg-white/10 rounded-lg">Create User</Link>
-                        <Link to="/create-admin" className="py-2.5 px-4 m-1 text-sm font-medium block text-center w-11/12 hover:bg-white/10 rounded-lg">Create Admin</Link>
                     </>
                 ) : (
                     <Link to="/login" className="py-2.5 px-6 m-2 text-sm font-bold bg-white text-sky-600 rounded-lg block text-center w-11/12">Sign In</Link>
@@ -189,17 +182,17 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                             </div>
                             <div className="relative bg-white/10 rounded-full p-1 flex items-center">
                                 <div className={`absolute top-1 left-1 w-[calc(50%-0.25rem)] h-[calc(100%-0.5rem)] bg-white rounded-full transition-transform duration-300 ${darkMode ? 'translate-x-full' : 'translate-x-0'}`}></div>
-                                <button onClick={() => darkMode && toggleDarkMode()} className={`flex-1 py-2 z-10 text-sm font-medium ${!darkMode ? 'text-sky-600' : 'text-white'}`}>☀️ Light</button>
-                                <button onClick={() => !darkMode && toggleDarkMode()} className={`flex-1 py-2 z-10 text-sm font-medium ${darkMode ? 'text-sky-600' : 'text-white'}`}>🌙 Dark</button>
+                                <button onClick={() => darkMode && toggleDarkMode()} className={`flex-1 py-2 z-10 text-sm font-medium ${!darkMode ? 'text-sky-600' : 'text-white'}`}>Light</button>
+                                <button onClick={() => !darkMode && toggleDarkMode()} className={`flex-1 py-2 z-10 text-sm font-medium ${darkMode ? 'text-sky-600' : 'text-white'}`}>Dark</button>
                             </div>
                             <button onClick={() => { setShowThemeCustomizer(true); setIsDropdownOpen(false); setIsMobileMenuOpen(false); }} className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 rounded-lg text-sm">
-                                <span>🎨</span><span>Customize Theme</span>
+                                <span></span><span>Customize Theme</span>
                             </button>
                         </div>
 
                         {isLoggedIn && (
                             <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 px-5 py-4 hover:bg-red-500/90 text-sm font-medium rounded-b-lg">
-                                <span>🚪</span><span>Logout</span>
+                                <span></span><span>Logout</span>
                             </button>
                         )}
                     </div>
