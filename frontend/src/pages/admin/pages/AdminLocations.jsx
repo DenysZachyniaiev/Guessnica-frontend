@@ -94,14 +94,16 @@ export default function AdminLocations() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
-                                    {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}
+                                    {location.latitude != null && location.longitude != null
+                                        ? `${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}`
+                                        : '—'}
                                 </div>
                                 
                                 <div className="flex items-center text-gray-500 dark:text-gray-400">
                                     <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                     </svg>
-                                    {location.riddleCount || 0} riddles
+                                    {(location.riddleCount ?? 0)} riddles
                                 </div>
                             </div>
                             
@@ -137,7 +139,7 @@ export default function AdminLocations() {
 
             {/* Add/Edit Modal would go here - simplified for now */}
             {showModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999]">
                     <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-md w-full">
                         <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
                             {editingLocation ? 'Edit Location' : 'Add New Location'}

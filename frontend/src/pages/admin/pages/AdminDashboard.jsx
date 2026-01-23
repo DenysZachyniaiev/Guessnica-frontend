@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState({
@@ -136,25 +136,27 @@ export default function AdminDashboard() {
                         Quick Actions
                     </h2>
                     <div className="space-y-3">
-                        <Link to="/admin/riddles" className="block w-full text-left px-4 py-3 bg-sky-50 dark:bg-sky-900/20 rounded-lg hover:bg-sky-100 dark:hover:bg-sky-900/30 transition-colors">
-                            <div className="font-medium text-sky-700 dark:text-sky-300">Add New Riddle</div>
-                            <div className="text-sm text-sky-600 dark:text-sky-400">Upload a new photo riddle</div>
-                        </Link>
-                        <Link to="/admin/users" className="block w-full text-left px-4 py-3 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
-                            <div className="font-medium text-green-700 dark:text-green-300">Manage Users</div>
-                            <div className="text-sm text-green-600 dark:text-green-400">View and manage user accounts</div>
-                        </Link>
-                        <Link to="/admin/locations" className="block w-full text-left px-4 py-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors">
-                            <div className="font-medium text-orange-700 dark:text-orange-300">Manage Locations</div>
-                            <div className="text-sm text-orange-600 dark:text-orange-400">Add and manage game locations</div>
-                        </Link>
-                        <Link to="/admin/stats" className="block w-full text-left px-4 py-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors">
-                            <div className="font-medium text-purple-700 dark:text-purple-300">View Statistics</div>
-                            <div className="text-sm text-purple-600 dark:text-purple-400">Detailed game statistics</div>
-                        </Link>
+                        {/* Use navigate to ensure routing works reliably inside admin layout */}
+                        <QuickAction to="/admin/riddles" bg="bg-sky-50 dark:bg-sky-900/20" title="Add New Riddle" subtitle="Upload a new photo riddle" />
+                        <QuickAction to="/admin/locations" bg="bg-orange-50 dark:bg-orange-900/20" title="Manage Locations" subtitle="Add and manage game locations" />
+                        <QuickAction to="/admin/settings" bg="bg-indigo-50 dark:bg-indigo-900/20" title="Settings" subtitle="Game and system settings" />
+                        <QuickAction to="/admin/stats" bg="bg-purple-50 dark:bg-purple-900/20" title="View Statistics" subtitle="Detailed game statistics" />
                     </div>
                 </div>
             </div>
         </div>
+    );
+}
+
+function QuickAction({ to, bg, title, subtitle }) {
+    const navigate = useNavigate();
+    return (
+        <button
+            onClick={() => navigate(to)}
+            className={`${bg} block w-full text-left px-4 py-3 rounded-lg hover:opacity-95 transition-colors text-left`}
+        >
+            <div className="font-medium text-gray-800 dark:text-gray-200">{title}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">{subtitle}</div>
+        </button>
     );
 }

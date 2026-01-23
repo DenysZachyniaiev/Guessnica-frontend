@@ -4,16 +4,23 @@ export default function AdminStats() {
     const [stats, setStats] = useState(null);
 
     useEffect(() => {
-        fetch("/admin/stats", {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("jwt")}` 
+        const load = async () => {
+            try {
+                const res = await fetch("/admin/stats", {
+                    headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` }
+                });
+                if (!res.ok) throw new Error('Failed to load stats');
+                const data = await res.json();
+                setStats(data);
+            } catch (e) {
+                console.error(e);
+                setStats(null);
             }
-        })
-            .then(r => r.json())
-            .then(setStats);
+        };
+        load();
     }, []);
 
-    if (!stats) return <div className="p-6">Loading…</div>;
+    if (stats === null) return <div className="p-6">Loading…</div>;
 
     return (
         <div className="p-6 space-y-8">
@@ -29,9 +36,9 @@ export default function AdminStats() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Stat label="Avg score" value={stats.AvgScore.toFixed(2)} />
-                <Stat label="Avg time (s)" value={stats.AvgTime.toFixed(2)} />
-                <Stat label="Avg distance (m)" value={stats.AvgDistance.toFixed(2)} />
+                <Stat label="Avg score" value={(stats.AvgScore ?? 0).toFixed(2)} />
+                <Stat label="Avg time (s)" value={(stats.AvgTime ?? 0).toFixed(2)} />
+                <Stat label="Avg distance (m)" value={(stats.AvgDistance ?? 0).toFixed(2)} />
             </div>
 
             <div className="bg-slate-50 rounded-xl shadow p-4">
@@ -47,7 +54,7 @@ export default function AdminStats() {
                         </tr>
                     </thead>
                     <tbody>
-                        {stats.TopUsers.map(u => (
+                        {(stats.TopUsers || []).map(u => (
                             <tr key={u.userId} className="border-b">
                                 <td className="py-1">{u.userId}</td>
                                 <td>{u.totalScore}</td>

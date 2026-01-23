@@ -158,7 +158,7 @@ export default function AdminRiddles() {
 
             {/* Add/Edit Modal would go here - simplified for now */}
             {showModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999]">
                     <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-md w-full">
                         <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
                             {editingRiddle ? 'Edit Riddle' : 'Add New Riddle'}
