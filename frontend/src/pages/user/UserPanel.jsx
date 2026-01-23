@@ -26,9 +26,23 @@ export default function UserPanel() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [activeTab, setActiveTab] = useState('overview');
+    const [darkMode, setDarkMode] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
+        const isDark = document.documentElement.classList.contains('dark');
+        setDarkMode(isDark);
+
+        const observer = new MutationObserver(() => {
+            const isDark = document.documentElement.classList.contains('dark');
+            setDarkMode(isDark);
+        });
+
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+
         const token = localStorage.getItem('jwt');
 
         if (!token) {
@@ -40,6 +54,8 @@ export default function UserPanel() {
         fetchUserData();
         fetchUserStats();
         fetchGameHistory();
+
+        return () => observer.disconnect();
     }, []);
 
     const fetchUserData = async () => {
@@ -131,7 +147,6 @@ export default function UserPanel() {
             });
         } catch (err) {
             console.error('Stats fetch error:', err);
-            // Use mock data on error
             setUserStats({
                 totalGamesPlayed: 25,
                 totalScore: 2500,
@@ -284,63 +299,86 @@ export default function UserPanel() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-sky-50 dark:bg-slate-900 flex items-center justify-center">
-                <div className="text-center text-gray-500">Loading user panel...</div>
+            <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${
+                darkMode
+                    ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900'
+                    : 'bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50'
+            }`}>
+                <div className={`text-center text-lg font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Loading your profile...
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-sky-50 dark:bg-slate-900">
-            <div className="max-w-7xl mx-auto px-4 py-8">
-                <div className="bg-white dark:bg-slate-800 shadow-lg rounded-lg">
-                    {/* Header */}
-                    <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                    User Panel
-                                </h1>
-                                <p className="text-gray-600 dark:text-gray-400 mt-1">
-                                    Manage your profile and view your game statistics
-                                </p>
-                            </div>
-                            {isAdmin && (
-                                <button
-                                    onClick={() => navigate('/admin')}
-                                    className="bg-sky-600 text-white px-4 py-2 rounded-lg hover:bg-sky-700 transition-colors"
-                                >
-                                    Admin Panel
-                                </button>
-                            )}
-                        </div>
+        <div className={`min-h-screen transition-colors duration-300 ${
+            darkMode
+                ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900'
+                : 'bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50'
+        }`}>
+            <div className="container mx-auto px-4 py-12">
+                <div className="max-w-7xl mx-auto">
+                    {/* Header Section */}
+                    <div className="text-center mb-12">
+                        <h1 className={`text-5xl md:text-6xl font-black mb-4 transition-colors duration-300 ${
+                            darkMode
+                                ? 'text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400'
+                                : 'text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-blue-600'
+                        }`}>
+                            Your Profile
+                        </h1>
+                        <p className={`text-lg transition-colors duration-300 ${
+                            darkMode ? 'text-gray-300' : 'text-gray-700'
+                        }`}>
+                            Track your progress and view your achievements
+                        </p>
                     </div>
 
                     {error && (
-                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-center m-6">
+                        <div className="mb-6 p-4 rounded-xl bg-red-500/10 border-2 border-red-500 text-red-600 text-center font-medium">
                             {error}
                         </div>
                     )}
 
-                    {/* User Profile Section */}
-                    <div className="p-6 border-b border-gray-200 dark:border-slate-700">
-                        <div className="flex items-center space-x-6">
-                            <div className="relative">
+                    {/* Profile Card */}
+                    <div className={`p-8 rounded-2xl mb-8 transition-all duration-300 ${
+                        darkMode
+                            ? 'bg-gray-800/50 border-2 border-gray-700'
+                            : 'bg-white border-2 border-gray-200 shadow-xl'
+                    }`}>
+                        <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+                            <div className="relative group">
                                 {userData.avatarUrl ? (
                                     <img
                                         src={userData.avatarUrl}
                                         alt="Avatar"
-                                        className="w-24 h-24 rounded-full object-cover"
+                                        className="w-32 h-32 rounded-full object-cover ring-4 ring-offset-4 transition-all duration-300 group-hover:scale-105"
+                                        style={{
+                                            ringColor: darkMode ? '#3b82f6' : '#0284c7',
+                                            ringOffsetColor: darkMode ? '#1f2937' : '#ffffff'
+                                        }}
                                     />
                                 ) : (
-                                    <div className="w-24 h-24 bg-gray-200 dark:bg-slate-600 rounded-full flex items-center justify-center">
-                                        <span className="text-2xl font-medium text-gray-600 dark:text-gray-300">
+                                    <div className={`w-32 h-32 rounded-full flex items-center justify-center ring-4 ring-offset-4 transition-all duration-300 group-hover:scale-105 ${
+                                        darkMode
+                                            ? 'bg-gradient-to-br from-blue-600 to-cyan-600 ring-blue-600'
+                                            : 'bg-gradient-to-br from-sky-600 to-blue-600 ring-sky-600'
+                                    }`}
+                                         style={{
+                                             ringOffsetColor: darkMode ? '#1f2937' : '#ffffff'
+                                         }}>
+                                        <span className="text-5xl font-black text-white">
                                             {userData.displayName?.charAt(0)?.toUpperCase() || '?'}
                                         </span>
                                     </div>
                                 )}
-                                <label className="absolute bottom-0 right-0 bg-sky-600 text-white p-2 rounded-full cursor-pointer hover:bg-sky-700 transition-colors">
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <label className={`absolute bottom-0 right-0 p-3 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 shadow-xl ${
+                                    darkMode
+                                        ? 'bg-blue-600 hover:bg-blue-500'
+                                        : 'bg-sky-600 hover:bg-sky-500'
+                                }`}>
+                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                                     </svg>
                                     <input
@@ -351,305 +389,237 @@ export default function UserPanel() {
                                     />
                                 </label>
                             </div>
-                            <div className="flex-1">
-                                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+
+                            <div className="flex-1 text-center md:text-left">
+                                <h2 className={`text-3xl font-black mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                                     {userData.displayName || 'User'}
                                 </h2>
-                                <p className="text-gray-600 dark:text-gray-400">
+                                <p className={`text-lg mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                                     {userData.email || 'No email'}
                                 </p>
-                                <div className="flex items-center gap-2 mt-2">
-                                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                                    <span className={`inline-flex px-4 py-2 text-sm font-bold rounded-full ${
                                         isAdmin
-                                            ? 'bg-purple-100 text-purple-800'
-                                            : 'bg-green-100 text-green-800'
+                                            ? 'bg-purple-500/20 text-purple-400 border-2 border-purple-500'
+                                            : 'bg-green-500/20 text-green-400 border-2 border-green-500'
                                     }`}>
-                                        {isAdmin ? 'Admin' : 'User'}
+                                        {isAdmin ? '👑 Admin' : '🎮 Player'}
                                     </span>
                                     {userData.createdAt && (
-                                        <span className="text-sm text-gray-500 dark:text-gray-400">
-                                            Joined {formatDate(userData.createdAt)}
+                                        <span className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                            📅 Joined {formatDate(userData.createdAt)}
                                         </span>
                                     )}
                                 </div>
+                                {isAdmin && (
+                                    <button
+                                        onClick={() => navigate('/admin')}
+                                        className={`mt-6 px-6 py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg ${
+                                            darkMode
+                                                ? 'bg-purple-600 hover:bg-purple-500 text-white'
+                                                : 'bg-purple-600 hover:bg-purple-500 text-white'
+                                        }`}
+                                    >
+                                        Admin Panel →
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
 
                     {/* Navigation Tabs */}
-                    <div className="border-b border-gray-200 dark:border-slate-700">
-                        <nav className="flex space-x-8 px-6">
+                    <div className={`flex flex-wrap gap-2 mb-8 p-2 rounded-2xl ${
+                        darkMode ? 'bg-gray-800/50' : 'bg-white/50'
+                    }`}>
+                        {['overview', 'statistics', 'history', 'achievements'].map((tab) => (
                             <button
-                                onClick={() => setActiveTab('overview')}
-                                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                                    activeTab === 'overview'
-                                        ? 'border-sky-500 text-sky-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                key={tab}
+                                onClick={() => setActiveTab(tab)}
+                                className={`flex-1 min-w-[140px] py-3 px-6 rounded-xl font-bold text-sm transition-all duration-300 ${
+                                    activeTab === tab
+                                        ? darkMode
+                                            ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg scale-105'
+                                            : 'bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-lg scale-105'
+                                        : darkMode
+                                            ? 'bg-gray-700/50 text-gray-400 hover:bg-gray-700 hover:text-white'
+                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
                                 }`}
                             >
-                                Overview
+                                {tab.charAt(0).toUpperCase() + tab.slice(1)}
                             </button>
-                            <button
-                                onClick={() => setActiveTab('statistics')}
-                                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                                    activeTab === 'statistics'
-                                        ? 'border-sky-500 text-sky-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                }`}
-                            >
-                                Statistics
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('history')}
-                                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                                    activeTab === 'history'
-                                        ? 'border-sky-500 text-sky-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                }`}
-                            >
-                                Game History
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('achievements')}
-                                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                                    activeTab === 'achievements'
-                                        ? 'border-sky-500 text-sky-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                }`}
-                            >
-                                Achievements
-                            </button>
-                        </nav>
+                        ))}
                     </div>
 
                     {/* Tab Content */}
-                    <div className="p-6">
-                        {activeTab === 'overview' && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                <div className="bg-sky-50 dark:bg-slate-700 p-6 rounded-lg">
-                                    <div className="text-2xl font-bold text-sky-600 dark:text-sky-400">
-                                        {userStats.totalGamesPlayed}
+                    {activeTab === 'overview' && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {[
+                                { label: 'Games Played', value: userStats.totalGamesPlayed, icon: '🎮', color: darkMode ? 'from-blue-600 to-cyan-600' : 'from-sky-500 to-blue-500' },
+                                { label: 'Total Score', value: userStats.totalScore, icon: '⭐', color: darkMode ? 'from-green-600 to-emerald-600' : 'from-green-500 to-emerald-500' },
+                                { label: 'Accuracy', value: `${userStats.accuracy}%`, icon: '🎯', color: darkMode ? 'from-purple-600 to-pink-600' : 'from-purple-500 to-pink-500' },
+                                { label: 'Best Score', value: userStats.bestScore, icon: '🏆', color: darkMode ? 'from-orange-600 to-red-600' : 'from-orange-500 to-red-500' }
+                            ].map((stat, idx) => (
+                                <div key={idx} className={`p-6 rounded-xl transition-all duration-300 hover:scale-105 ${
+                                    darkMode
+                                        ? 'bg-gray-800/50 border-2 border-gray-700 hover:border-blue-600'
+                                        : 'bg-white border-2 border-gray-200 hover:border-sky-400 shadow-lg'
+                                }`}>
+                                    <div className="text-4xl mb-3">{stat.icon}</div>
+                                    <div className={`text-3xl font-black mb-2 bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
+                                        {stat.value}
                                     </div>
-                                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                        Games Played
-                                    </div>
-                                </div>
-                                <div className="bg-green-50 dark:bg-slate-700 p-6 rounded-lg">
-                                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                                        {userStats.totalScore}
-                                    </div>
-                                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                        Total Score
-                                    </div>
-                                </div>
-                                <div className="bg-purple-50 dark:bg-slate-700 p-6 rounded-lg">
-                                    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                                        {userStats.accuracy}%
-                                    </div>
-                                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                        Accuracy
+                                    <div className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        {stat.label}
                                     </div>
                                 </div>
-                                <div className="bg-orange-50 dark:bg-slate-700 p-6 rounded-lg">
-                                    <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                                        {userStats.bestScore}
-                                    </div>
-                                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                        Best Score
-                                    </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {activeTab === 'statistics' && (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div className={`p-8 rounded-2xl transition-colors duration-300 ${
+                                darkMode
+                                    ? 'bg-gray-800/50 border-2 border-gray-700'
+                                    : 'bg-white border-2 border-gray-200 shadow-xl'
+                            }`}>
+                                <h3 className={`text-2xl font-black mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                    📊 Performance Metrics
+                                </h3>
+                                <div className="space-y-4">
+                                    {[
+                                        { label: 'Average Score', value: userStats.averageScore },
+                                        { label: 'Average Time', value: formatTime(userStats.averageTime) },
+                                        { label: 'Total Distance', value: `${(userStats.totalDistance / 1000).toFixed(1)} km` },
+                                        { label: 'Correct Guesses', value: userStats.correctGuesses }
+                                    ].map((metric, idx) => (
+                                        <div key={idx} className={`flex justify-between items-center p-4 rounded-lg ${
+                                            darkMode ? 'bg-gray-700/50' : 'bg-gray-50'
+                                        }`}>
+                                            <span className={`font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                {metric.label}
+                                            </span>
+                                            <span className={`font-bold text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                                {metric.value}
+                                            </span>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
-                        )}
 
-                        {activeTab === 'statistics' && (
-                            <div className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="bg-gray-50 dark:bg-slate-700 p-6 rounded-lg">
-                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                                            Performance Metrics
-                                        </h3>
-                                        <div className="space-y-3">
-                                            <div className="flex justify-between">
-                                                <span className="text-gray-600 dark:text-gray-400">Average Score</span>
-                                                <span className="font-medium text-gray-900 dark:text-white">
-                                                    {userStats.averageScore}
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-gray-600 dark:text-gray-400">Average Time</span>
-                                                <span className="font-medium text-gray-900 dark:text-white">
-                                                    {formatTime(userStats.averageTime)}
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-gray-600 dark:text-gray-400">Total Distance</span>
-                                                <span className="font-medium text-gray-900 dark:text-white">
-                                                    {(userStats.totalDistance / 1000).toFixed(1)} km
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-gray-600 dark:text-gray-400">Correct Guesses</span>
-                                                <span className="font-medium text-gray-900 dark:text-white">
-                                                    {userStats.correctGuesses}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="bg-gray-50 dark:bg-slate-700 p-6 rounded-lg">
-                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                                            Quick Actions
-                                        </h3>
-                                        <div className="space-y-3">
-                                            <button
-                                                onClick={() => navigate('/guess')}
-                                                className="w-full bg-sky-600 text-white px-4 py-2 rounded-lg hover:bg-sky-700 transition-colors"
-                                            >
-                                                Play New Game
-                                            </button>
-                                            <button
-                                                onClick={() => navigate('/profile')}
-                                                className="w-full bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-                                            >
-                                                Edit Profile
-                                            </button>
-                                            <button
-                                                onClick={() => navigate('/')}
-                                                className="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-                                            >
-                                                View Today's Riddle
-                                            </button>
-                                        </div>
-                                    </div>
+                            <div className={`p-8 rounded-2xl transition-colors duration-300 ${
+                                darkMode
+                                    ? 'bg-gray-800/50 border-2 border-gray-700'
+                                    : 'bg-white border-2 border-gray-200 shadow-xl'
+                            }`}>
+                                <h3 className={`text-2xl font-black mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                    ⚡ Quick Actions
+                                </h3>
+                                <div className="space-y-3">
+                                    {[
+                                        { label: 'Play New Game', icon: '🎮', path: '/guess', color: darkMode ? 'from-blue-600 to-cyan-600' : 'from-sky-600 to-blue-600' },
+                                        { label: 'Edit Profile', icon: '✏️', path: '/profile', color: darkMode ? 'from-purple-600 to-pink-600' : 'from-purple-600 to-pink-600' },
+                                        { label: "View Today's Riddle", icon: '🎯', path: '/', color: darkMode ? 'from-green-600 to-emerald-600' : 'from-green-600 to-emerald-600' }
+                                    ].map((action, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => navigate(action.path)}
+                                            className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg bg-gradient-to-r ${action.color} text-white`}
+                                        >
+                                            <span className="text-xl">{action.icon}</span>
+                                            <span>{action.label}</span>
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
-                        )}
+                        </div>
+                    )}
 
-                        {activeTab === 'history' && (
-                            <div className="bg-white dark:bg-slate-700 rounded-lg shadow overflow-hidden">
-                                <div className="overflow-x-auto">
-                                    <table className="w-full">
-                                        <thead className="bg-gray-50 dark:bg-slate-800">
-                                        <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Date
+                    {activeTab === 'history' && (
+                        <div className={`rounded-2xl overflow-hidden transition-colors duration-300 ${
+                            darkMode
+                                ? 'bg-gray-800/50 border-2 border-gray-700'
+                                : 'bg-white border-2 border-gray-200 shadow-xl'
+                        }`}>
+                            <div className="overflow-x-auto">
+                                <table className="w-full">
+                                    <thead className={darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}>
+                                    <tr>
+                                        {['Date', 'Location', 'Your Guess', 'Distance', 'Score', 'Time', 'Result'].map((header) => (
+                                            <th key={header} className={`px-6 py-4 text-left text-xs font-black uppercase tracking-wider ${
+                                                darkMode ? 'text-gray-400' : 'text-gray-600'
+                                            }`}>
+                                                {header}
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Location
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Your Guess
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Distance
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Score
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Time
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                Result
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
-                                        {gameHistory.map((game) => (
-                                            <tr key={game.id} className="hover:bg-gray-50 dark:hover:bg-slate-700">
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                    {formatDate(game.date)}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                    {game.location}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                    {game.userGuess}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                    {game.distance} km
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                    {game.score}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                    {formatTime(game.timeSpent)}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                                                            game.correct
-                                                                ? 'bg-green-100 text-green-800'
-                                                                : 'bg-red-100 text-red-800'
-                                                        }`}>
-                                                            {game.correct ? 'Correct' : 'Incorrect'}
-                                                        </span>
-                                                </td>
-                                            </tr>
                                         ))}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                    </tr>
+                                    </thead>
+                                    <tbody className={`divide-y ${darkMode ? 'divide-gray-700' : 'divide-gray-200'}`}>
+                                    {gameHistory.map((game) => (
+                                        <tr key={game.id} className={`transition-colors ${
+                                            darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'
+                                        }`}>
+                                            <td className={`px-6 py-4 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                {formatDate(game.date)}
+                                            </td>
+                                            <td className={`px-6 py-4 text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                                {game.location}
+                                            </td>
+                                            <td className={`px-6 py-4 text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                                {game.userGuess}
+                                            </td>
+                                            <td className={`px-6 py-4 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                {game.distance} km
+                                            </td>
+                                            <td className={`px-6 py-4 text-sm font-bold ${darkMode ? 'text-cyan-400' : 'text-sky-600'}`}>
+                                                {game.score}
+                                            </td>
+                                            <td className={`px-6 py-4 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                {formatTime(game.timeSpent)}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                    <span className={`inline-flex px-3 py-1 text-xs font-bold rounded-full ${
+                                                        game.correct
+                                                            ? 'bg-green-500/20 text-green-400 border-2 border-green-500'
+                                                            : 'bg-red-500/20 text-red-400 border-2 border-red-500'
+                                                    }`}>
+                                                        {game.correct ? '✓ Correct' : '✗ Incorrect'}
+                                                    </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
                             </div>
-                        )}
+                        </div>
+                    )}
 
-                        {activeTab === 'achievements' && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                <div className="bg-yellow-50 dark:bg-slate-700 p-6 rounded-lg text-center">
-                                    <div className="text-4xl mb-4">🏆</div>
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                                        First Win
+                    {activeTab === 'achievements' && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {[
+                                { title: 'First Win', icon: '🏆', desc: 'Win your first game', color: 'from-yellow-500 to-orange-500' },
+                                { title: 'Sharpshooter', icon: '🎯', desc: 'Get 10 correct guesses', color: 'from-blue-500 to-cyan-500' },
+                                { title: 'Speed Demon', icon: '⚡', desc: 'Complete a game in under 60 seconds', color: 'from-green-500 to-emerald-500' },
+                                { title: 'High Scorer', icon: '🌟', desc: 'Score over 400 points in a single game', color: 'from-purple-500 to-pink-500' },
+                                { title: 'On Fire', icon: '🔥', desc: 'Win 3 games in a row', color: 'from-red-500 to-orange-500' },
+                                { title: 'World Traveler', icon: '🗺️', desc: 'Play games from 10 different countries', color: 'from-indigo-500 to-purple-500' }
+                            ].map((achievement, idx) => (
+                                <div key={idx} className={`p-6 rounded-xl text-center transition-all duration-300 hover:scale-105 ${
+                                    darkMode
+                                        ? 'bg-gray-800/50 border-2 border-gray-700 hover:border-blue-600'
+                                        : 'bg-white border-2 border-gray-200 hover:border-sky-400 shadow-lg'
+                                }`}>
+                                    <div className="text-5xl mb-4">{achievement.icon}</div>
+                                    <h3 className={`text-xl font-black mb-2 bg-gradient-to-r ${achievement.color} bg-clip-text text-transparent`}>
+                                        {achievement.title}
                                     </h3>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        Win your first game
+                                    <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        {achievement.desc}
                                     </p>
                                 </div>
-                                <div className="bg-blue-50 dark:bg-slate-700 p-6 rounded-lg text-center">
-                                    <div className="text-4xl mb-4">🎯</div>
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                                        Sharpshooter
-                                    </h3>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        Get 10 correct guesses
-                                    </p>
-                                </div>
-                                <div className="bg-green-50 dark:bg-slate-700 p-6 rounded-lg text-center">
-                                    <div className="text-4xl mb-4">⚡</div>
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                                        Speed Demon
-                                    </h3>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        Complete a game in under 60 seconds
-                                    </p>
-                                </div>
-                                <div className="bg-purple-50 dark:bg-slate-700 p-6 rounded-lg text-center">
-                                    <div className="text-4xl mb-4">🌟</div>
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                                        High Scorer
-                                    </h3>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        Score over 400 points in a single game
-                                    </p>
-                                </div>
-                                <div className="bg-red-50 dark:bg-slate-700 p-6 rounded-lg text-center">
-                                    <div className="text-4xl mb-4">🔥</div>
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                                        On Fire
-                                    </h3>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        Win 3 games in a row
-                                    </p>
-                                </div>
-                                <div className="bg-indigo-50 dark:bg-slate-700 p-6 rounded-lg text-center">
-                                    <div className="text-4xl mb-4">🗺️</div>
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                                        World Traveler
-                                    </h3>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        Play games from 10 different countries
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
