@@ -285,9 +285,9 @@ export default function Guess() {
                                 <TileLayer
                                     url={darkMode
                                         ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                                        : "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
+                                        : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                                     }
-                                    attribution='&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>'
+                                    attribution='&copy; <a href="https://carto.com/">CARTO</a>'
                                 />
 
                                 <LocationMarker
