@@ -9,4 +9,4 @@ services:
       - "host.docker.internal:host-gateway" # Crucial for Linux/Docker connection
     environment:
       - NODE_ENV=production
-      - VITE_API_URL=http://localhost:8082
+      - VITE_API_BASE_URL=http://host.docker.internal:8082

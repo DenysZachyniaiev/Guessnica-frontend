@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function UserPanel() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8082';
+
     const [userData, setUserData] = useState({
         id: '',
         email: '',
@@ -12,6 +13,7 @@ export default function UserPanel() {
         createdAt: '',
         lastLogin: ''
     });
+
     const [userStats, setUserStats] = useState({
         totalGamesPlayed: 0,
         totalScore: 0,
@@ -22,12 +24,24 @@ export default function UserPanel() {
         correctGuesses: 0,
         accuracy: 0
     });
+
     const [gameHistory, setGameHistory] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [activeTab, setActiveTab] = useState('overview');
     const [darkMode, setDarkMode] = useState(false);
+
     const navigate = useNavigate();
+
+    const daysByRange = {
+        daily: 1,
+        weekly: 7,
+        monthly: 30,
+        alltime: 3650,
+    };
+    
+    const avgTimeDays = daysByRange.weekly;
+    const avgTimeCategory = 'AverageTime';
 
     useEffect(() => {
         const isDark = document.documentElement.classList.contains('dark');
@@ -44,7 +58,6 @@ export default function UserPanel() {
         });
 
         const token = localStorage.getItem('jwt');
-
         if (!token) {
             console.warn('No JWT token found, redirecting to login');
             navigate('/login');
@@ -53,6 +66,7 @@ export default function UserPanel() {
 
         fetchUserData();
         fetchUserStats();
+        fetchUserAverageTime();
         fetchGameHistory();
 
         return () => observer.disconnect();
@@ -70,10 +84,9 @@ export default function UserPanel() {
             }
 
             const response = await fetch(url, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
+
             const contentType = response.headers.get('content-type');
 
             if (!response.ok) {
@@ -112,175 +125,207 @@ export default function UserPanel() {
         }
     };
 
+    /**
+     * /users/me/stats
+     * { assigned, answered, correct, incorrect, totalScore, avgScore, currentStreak, bestStreak, accountCreatedAt,
+     *   totalDistanceMeters, avgDistanceMeters }
+     */
     const fetchUserStats = async () => {
         try {
             const token = localStorage.getItem('jwt');
+            if (!token) return;
 
-            if (!token) {
+            const response = await fetch(`${API_BASE_URL}/users/me/stats`, {
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+
+            if (!response.ok) {
+                setUserStats((prev) => ({
+                    ...prev,
+                    totalGamesPlayed: 25,
+                    totalScore: 2500,
+                    averageScore: 100,
+                    bestScore: 500,
+                    totalDistance: 15000,
+                    averageTime: 180,
+                    correctGuesses: 18,
+                    accuracy: 72,
+                }));
                 return;
             }
 
-            const response = await fetch(`${API_BASE_URL}/users/me/stats`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) return;
 
-            if (response.ok) {
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    const data = await response.json();
-                    setUserStats(data);
-                    return;
-                }
-            }
+            const data = await response.json();
 
-            setUserStats({
-                totalGamesPlayed: 25,
-                totalScore: 2500,
-                averageScore: 100,
-                bestScore: 500,
-                totalDistance: 15000,
-                averageTime: 180,
-                correctGuesses: 18,
-                accuracy: 72,
-            });
+            const answered = Number(data.answered ?? 0);
+            const correct = Number(data.correct ?? 0);
+
+            const totalScore = Number(data.totalScore ?? 0);
+            const avgScore = Number(data.avgScore ?? 0);
+
+            const totalDistanceMeters = Number(data.totalDistanceMeters ?? 0);
+
+            const accuracy = answered > 0 ? Math.round((correct / answered) * 100) : 0;
+
+            setUserStats((prev) => ({
+                ...prev,
+                totalGamesPlayed: Number.isFinite(answered) ? answered : 0,
+                totalScore: Number.isFinite(totalScore) ? totalScore : 0,
+                averageScore: Number.isFinite(avgScore) ? avgScore : 0,
+                bestScore: Number.isFinite(totalScore) ? totalScore : 0,
+                totalDistance: Number.isFinite(totalDistanceMeters) ? totalDistanceMeters : 0,
+                correctGuesses: Number.isFinite(correct) ? correct : 0,
+                accuracy: Number.isFinite(accuracy) ? accuracy : 0,
+            }));
         } catch (err) {
             console.error('Stats fetch error:', err);
-            setUserStats({
-                totalGamesPlayed: 25,
-                totalScore: 2500,
-                averageScore: 100,
-                bestScore: 500,
-                totalDistance: 15000,
-                averageTime: 180,
-                correctGuesses: 18,
-                accuracy: 72,
-            });
         }
     };
 
+    /**
+     * GET /leaderboard/rank?days=7&category=AverageTime
+     * -> averageTimeSeconds
+     */
+    const fetchUserAverageTime = async () => {
+        try {
+            const token = localStorage.getItem('jwt');
+            if (!token) return;
+
+            const url = `${API_BASE_URL}/leaderboard/rank?days=${avgTimeDays}&category=${encodeURIComponent(avgTimeCategory)}`;
+
+            const response = await fetch(url, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (!response.ok) return;
+
+            const data = await response.json();
+            const avgSeconds = Number(data?.averageTimeSeconds ?? 0);
+
+            setUserStats((prev) => ({
+                ...prev,
+                averageTime: Number.isFinite(avgSeconds) ? avgSeconds : 0,
+            }));
+        } catch (err) {
+            console.error('Avg time fetch error:', err);
+        }
+    };
+
+    /**
+     * GET /users/me/history
+     * Backend (po zmianach) np:
+     * [{ id, riddleId, answeredAt, isCorrect, points, distanceMeters, timeSeconds, locationName }]
+     *
+     * Mapujemy to na format UI:
+     * { id, date, location, userGuess, distance, score, timeSpent, correct }
+     */
     const fetchGameHistory = async () => {
         try {
             const token = localStorage.getItem('jwt');
-
             if (!token) {
                 setLoading(false);
                 return;
             }
 
             const response = await fetch(`${API_BASE_URL}/users/me/history`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
 
             if (response.ok) {
                 const contentType = response.headers.get('content-type');
                 if (contentType && contentType.includes('application/json')) {
                     const data = await response.json();
-                    setGameHistory(data);
+
+                    const mapped = (Array.isArray(data) ? data : []).map((x) => {
+                        const distanceKm = Number(x?.distanceMeters ?? 0) / 1000;
+
+                        return {
+                            id: x?.id ?? `${x?.riddleId ?? 'r'}-${x?.answeredAt ?? Math.random()}`,
+                            date: x?.answeredAt ?? null,
+                            location: x?.locationName ?? `Riddle #${x?.riddleId ?? '—'}`,
+                            userGuess: '—',
+                            distance: Number.isFinite(distanceKm) ? distanceKm.toFixed(2) : '0.00',
+                            score: Number(x?.points ?? 0),
+                            timeSpent: Number(x?.timeSeconds ?? 0),
+                            correct: Boolean(x?.isCorrect),
+                        };
+                    });
+
+                    setGameHistory(mapped);
                     setLoading(false);
                     return;
                 }
             }
-
+            
             setGameHistory([
                 {
                     id: 1,
                     date: '2024-01-20T15:30:00Z',
                     location: 'Paris, France',
                     userGuess: 'Berlin, Germany',
-                    distance: 878,
+                    distance: '878.00',
                     score: 150,
                     timeSpent: 245,
-                    correct: false,
-                },
-                {
-                    id: 2,
-                    date: '2024-01-19T14:20:00Z',
-                    location: 'Tokyo, Japan',
-                    userGuess: 'Tokyo, Japan',
-                    distance: 0,
-                    score: 500,
-                    timeSpent: 120,
-                    correct: true,
-                },
-                {
-                    id: 3,
-                    date: '2024-01-18T16:45:00Z',
-                    location: 'New York, USA',
-                    userGuess: 'Boston, USA',
-                    distance: 306,
-                    score: 200,
-                    timeSpent: 180,
                     correct: false,
                 },
             ]);
         } catch (err) {
             console.error('History fetch error:', err);
-            setGameHistory([
-                {
-                    id: 1,
-                    date: '2024-01-20T15:30:00Z',
-                    location: 'Paris, France',
-                    userGuess: 'Berlin, Germany',
-                    distance: 878,
-                    score: 150,
-                    timeSpent: 245,
-                    correct: false,
-                },
-                {
-                    id: 2,
-                    date: '2024-01-19T14:20:00Z',
-                    location: 'Tokyo, Japan',
-                    userGuess: 'Tokyo, Japan',
-                    distance: 0,
-                    score: 500,
-                    timeSpent: 120,
-                    correct: true,
-                },
-                {
-                    id: 3,
-                    date: '2024-01-18T16:45:00Z',
-                    location: 'New York, USA',
-                    userGuess: 'Boston, USA',
-                    distance: 306,
-                    score: 200,
-                    timeSpent: 180,
-                    correct: false,
-                },
-            ]);
         } finally {
             setLoading(false);
         }
     };
 
     const handleAvatarUpload = async (e) => {
-        const file = e.target.files[0];
+        const file = e.target.files?.[0];
         if (!file) return;
 
         const formData = new FormData();
-        formData.append('avatar', file);
+        formData.append("avatar", file);
+
+        const token = localStorage.getItem("jwt");
+        if (!token) {
+            setError("No JWT token found. Please login again.");
+            return;
+        }
 
         try {
-            const token = localStorage.getItem('jwt');
             const response = await fetch(`${API_BASE_URL}/users/me/avatar`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
                 },
-                body: formData
+                body: formData,
             });
 
             if (response.ok) {
-                fetchUserData();
-            } else {
-                setError('Failed to upload avatar');
+                await fetchUserData();
+                setError("");
+                return;
             }
+
+            let msg = `Failed to upload avatar (${response.status})`;
+            const ct = response.headers.get("content-type") || "";
+
+            if (ct.includes("application/json")) {
+                const data = await response.json();
+                if (data?.message) msg = data.message;
+                else if (data?.title && data?.errors) {
+                    const firstField = Object.keys(data.errors)[0];
+                    const firstErr = firstField ? data.errors[firstField]?.[0] : null;
+                    msg = firstErr ? `${data.title}: ${firstErr}` : data.title;
+                } else if (data?.title) msg = data.title;
+            } else {
+                const text = await response.text();
+                if (text) msg = text.slice(0, 200);
+            }
+
+            setError(msg);
         } catch (err) {
-            setError('Failed to upload avatar');
             console.error(err);
+            setError("Failed to upload avatar (network error)");
         }
     };
 
@@ -290,8 +335,9 @@ export default function UserPanel() {
     };
 
     const formatTime = (seconds) => {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
+        const s = Math.max(0, Math.round(Number(seconds || 0)));
+        const minutes = Math.floor(s / 60);
+        const remainingSeconds = s % 60;
         return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
     };
 
@@ -319,7 +365,6 @@ export default function UserPanel() {
         }`}>
             <div className="container mx-auto px-4 py-12">
                 <div className="max-w-7xl mx-auto">
-                    {/* Header Section */}
                     <div className="text-center mb-12">
                         <h1 className={`text-5xl md:text-6xl font-black mb-4 transition-colors duration-300 ${
                             darkMode
@@ -341,7 +386,6 @@ export default function UserPanel() {
                         </div>
                     )}
 
-                    {/* Profile Card */}
                     <div className={`p-8 rounded-2xl mb-8 transition-all duration-300 ${
                         darkMode
                             ? 'bg-gray-800/50 border-2 border-gray-700'
@@ -427,7 +471,6 @@ export default function UserPanel() {
                         </div>
                     </div>
 
-                    {/* Navigation Tabs */}
                     <div className={`flex flex-wrap gap-2 mb-8 p-2 rounded-2xl ${
                         darkMode ? 'bg-gray-800/50' : 'bg-white/50'
                     }`}>
@@ -450,7 +493,6 @@ export default function UserPanel() {
                         ))}
                     </div>
 
-                    {/* Tab Content */}
                     {activeTab === 'overview' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {[
@@ -477,7 +519,7 @@ export default function UserPanel() {
                     )}
 
                     {activeTab === 'statistics' && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
                             <div className={`p-8 rounded-2xl transition-colors duration-300 ${
                                 darkMode
                                     ? 'bg-gray-800/50 border-2 border-gray-700'
@@ -490,7 +532,7 @@ export default function UserPanel() {
                                     {[
                                         { label: 'Average Score', value: userStats.averageScore },
                                         { label: 'Average Time', value: formatTime(userStats.averageTime) },
-                                        { label: 'Total Distance', value: `${(userStats.totalDistance / 1000).toFixed(1)} km` },
+                                        { label: 'Total Distance', value: `${(userStats.totalDistance / 1000).toFixed(2)} km` },
                                         { label: 'Correct Guesses', value: userStats.correctGuesses }
                                     ].map((metric, idx) => (
                                         <div key={idx} className={`flex justify-between items-center p-4 rounded-lg ${
@@ -507,31 +549,31 @@ export default function UserPanel() {
                                 </div>
                             </div>
 
-                            <div className={`p-8 rounded-2xl transition-colors duration-300 ${
-                                darkMode
-                                    ? 'bg-gray-800/50 border-2 border-gray-700'
-                                    : 'bg-white border-2 border-gray-200 shadow-xl'
-                            }`}>
-                                <h3 className={`text-2xl font-black mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                                    ⚡ Quick Actions
-                                </h3>
-                                <div className="space-y-3">
-                                    {[
-                                        { label: 'Play New Game', icon: '🎮', path: '/guess', color: darkMode ? 'from-blue-600 to-cyan-600' : 'from-sky-600 to-blue-600' },
-                                        { label: 'Edit Profile', icon: '✏️', path: '/profile', color: darkMode ? 'from-purple-600 to-pink-600' : 'from-purple-600 to-pink-600' },
-                                        { label: "View Today's Riddle", icon: '🎯', path: '/', color: darkMode ? 'from-green-600 to-emerald-600' : 'from-green-600 to-emerald-600' }
-                                    ].map((action, idx) => (
-                                        <button
-                                            key={idx}
-                                            onClick={() => navigate(action.path)}
-                                            className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg bg-gradient-to-r ${action.color} text-white`}
-                                        >
-                                            <span className="text-xl">{action.icon}</span>
-                                            <span>{action.label}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                            {/*<div className={`p-8 rounded-2xl transition-colors duration-300 ${*/}
+                            {/*    darkMode*/}
+                            {/*        ? 'bg-gray-800/50 border-2 border-gray-700'*/}
+                            {/*        : 'bg-white border-2 border-gray-200 shadow-xl'*/}
+                            {/*}`}>*/}
+                            {/*    <h3 className={`text-2xl font-black mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>*/}
+                            {/*        ⚡ Quick Actions*/}
+                            {/*    </h3>*/}
+                            {/*    <div className="space-y-3">*/}
+                            {/*        {[*/}
+                            {/*            { label: 'Play New Game', icon: '🎮', path: '/guess', color: darkMode ? 'from-blue-600 to-cyan-600' : 'from-sky-600 to-blue-600' },*/}
+                            {/*            { label: 'Edit Profile', icon: '✏️', path: '/profile', color: darkMode ? 'from-purple-600 to-pink-600' : 'from-purple-600 to-pink-600' },*/}
+                            {/*            { label: "View Today's Riddle", icon: '🎯', path: '/', color: darkMode ? 'from-green-600 to-emerald-600' : 'from-green-600 to-emerald-600' }*/}
+                            {/*        ].map((action, idx) => (*/}
+                            {/*            <button*/}
+                            {/*                key={idx}*/}
+                            {/*                onClick={() => navigate(action.path)}*/}
+                            {/*                className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg bg-gradient-to-r ${action.color} text-white`}*/}
+                            {/*            >*/}
+                            {/*                <span className="text-xl">{action.icon}</span>*/}
+                            {/*                <span>{action.label}</span>*/}
+                            {/*            </button>*/}
+                            {/*        ))}*/}
+                            {/*    </div>*/}
+                            {/*</div>*/}
                         </div>
                     )}
 
@@ -545,7 +587,7 @@ export default function UserPanel() {
                                 <table className="w-full">
                                     <thead className={darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}>
                                     <tr>
-                                        {['Date', 'Location', 'Your Guess', 'Distance', 'Score', 'Time', 'Result'].map((header) => (
+                                        {['Date', 'Location', 'Distance', 'Score', 'Time', 'Result'].map((header) => (
                                             <th key={header} className={`px-6 py-4 text-left text-xs font-black uppercase tracking-wider ${
                                                 darkMode ? 'text-gray-400' : 'text-gray-600'
                                             }`}>
@@ -555,29 +597,36 @@ export default function UserPanel() {
                                     </tr>
                                     </thead>
                                     <tbody className={`divide-y ${darkMode ? 'divide-gray-700' : 'divide-gray-200'}`}>
-                                    {gameHistory.map((game) => (
-                                        <tr key={game.id} className={`transition-colors ${
-                                            darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'
-                                        }`}>
-                                            <td className={`px-6 py-4 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                {formatDate(game.date)}
+                                    {gameHistory.length === 0 ? (
+                                        <tr>
+                                            <td
+                                                colSpan={6}
+                                                className={`px-6 py-10 text-center text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}
+                                            >
+                                                No games yet.
                                             </td>
-                                            <td className={`px-6 py-4 text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                                                {game.location}
-                                            </td>
-                                            <td className={`px-6 py-4 text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                                                {game.userGuess}
-                                            </td>
-                                            <td className={`px-6 py-4 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                {game.distance} km
-                                            </td>
-                                            <td className={`px-6 py-4 text-sm font-bold ${darkMode ? 'text-cyan-400' : 'text-sky-600'}`}>
-                                                {game.score}
-                                            </td>
-                                            <td className={`px-6 py-4 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                {formatTime(game.timeSpent)}
-                                            </td>
-                                            <td className="px-6 py-4">
+                                        </tr>
+                                    ) : (
+                                        gameHistory.map((game) => (
+                                            <tr key={game.id} className={`transition-colors ${
+                                                darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'
+                                            }`}>
+                                                <td className={`px-6 py-4 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                    {formatDate(game.date)}
+                                                </td>
+                                                <td className={`px-6 py-4 text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                                    {game.location ?? '—'}
+                                                </td>
+                                                <td className={`px-6 py-4 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                    {game.distance ?? '0.00'} km
+                                                </td>
+                                                <td className={`px-6 py-4 text-sm font-bold ${darkMode ? 'text-cyan-400' : 'text-sky-600'}`}>
+                                                    {Number.isFinite(Number(game.score)) ? game.score : 0}
+                                                </td>
+                                                <td className={`px-6 py-4 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                    {formatTime(game.timeSpent)}
+                                                </td>
+                                                <td className="px-6 py-4">
                                                     <span className={`inline-flex px-3 py-1 text-xs font-bold rounded-full ${
                                                         game.correct
                                                             ? 'bg-green-500/20 text-green-400 border-2 border-green-500'
@@ -585,9 +634,10 @@ export default function UserPanel() {
                                                     }`}>
                                                         {game.correct ? '✓ Correct' : '✗ Incorrect'}
                                                     </span>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
                                     </tbody>
                                 </table>
                             </div>
