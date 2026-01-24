@@ -69,6 +69,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between w-full">
                         {/* Logo */}
+
                         <Link
                             to="/welcome"
                             className={`py-4 px-2 flex items-center gap-2 transition-all duration-200 hover:scale-105 ${
@@ -80,6 +81,8 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
                             <span className="text-2xl font-black tracking-tight">Guessnica</span>
+                        <Link to="/welcome" className="py-4 px-2 flex items-center gap-2 hover:opacity-80 transition-opacity">
+                            <span className="text-xl font-bold tracking-wide">Guessnica</span>
                         </Link>
 
                         {/* Desktop Menu */}
@@ -116,6 +119,13 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                     >
                                         Leaderboard
                                     </Link>
+                                    <Link to="/welcome" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">Home</Link>
+                                    <Link to="/guess" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">Guess</Link>
+                                    <Link to="/profile" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">Profile</Link>
+                                    <Link to="/user-panel" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">User Panel</Link>
+                                    <Link to="/leaderboard" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">Leaderboard</Link>
+                                    <Link to="/create-user" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">Create User</Link>
+                                    <Link to="/create-admin" className="py-2 px-4 text-sm font-medium transition-all duration-200 hover:bg-white/10 rounded-lg">Create Admin</Link>
                                 </>
                             ) : (
                                 <Link

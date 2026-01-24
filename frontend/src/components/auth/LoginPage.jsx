@@ -10,6 +10,9 @@ export default function LoginPage({ setIsLoggedIn }) {
         email: '',
         password: ''
     });
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -62,6 +65,10 @@ export default function LoginPage({ setIsLoggedIn }) {
                 setIsLoggedIn(true);
 
                 navigate('/user-panel');
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                setIsLoggedIn(true);
+                navigate('/welcome');
             } else {
                 throw new Error(t('auth.errors.no_token'));
             }
