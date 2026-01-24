@@ -507,7 +507,6 @@ export default function UserPanel() {
                                 </div>
                             </div>
 
-                            {/* Quick Actions removed per UX decision */}
                         </div>
                     )}
 

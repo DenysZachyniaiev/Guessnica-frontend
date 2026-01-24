@@ -184,8 +184,8 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                                 onClick={() => changeLanguage('en')}
                                                 className={`flex-1 py-2 z-10 text-sm font-medium transition-colors ${
                                                     i18n.language === 'en'
-                                                        ? 'text-white'
-                                                        : darkMode ? 'text-gray-400' : 'text-gray-600'
+                                                        ? (darkMode ? 'text-white' : 'text-gray-900')
+                                                        : (darkMode ? 'text-gray-400' : 'text-gray-600')
                                                 }`}
                                             >
                                                 🇬🇧 EN
@@ -194,8 +194,8 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                                 onClick={() => changeLanguage('pl')}
                                                 className={`flex-1 py-2 z-10 text-sm font-medium transition-colors ${
                                                     i18n.language === 'pl'
-                                                        ? 'text-white'
-                                                        : darkMode ? 'text-gray-400' : 'text-gray-600'
+                                                        ? (darkMode ? 'text-white' : 'text-gray-900')
+                                                        : (darkMode ? 'text-gray-400' : 'text-gray-600')
                                                 }`}
                                             >
                                                 🇵🇱 PL
@@ -219,8 +219,8 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                                 onClick={() => darkMode && toggleDarkMode()}
                                                 className={`flex-1 py-2 z-10 text-sm font-medium transition-colors ${
                                                     !darkMode
-                                                        ? darkMode ? 'text-gray-900' : 'text-gray-900'
-                                                        : darkMode ? 'text-gray-400' : 'text-gray-600'
+                                                        ? 'text-gray-900'
+                                                        : (darkMode ? 'text-gray-400' : 'text-gray-600')
                                                 }`}
                                             >
                                                 Light
@@ -230,7 +230,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                                 className={`flex-1 py-2 z-10 text-sm font-medium transition-colors ${
                                                     darkMode
                                                         ? 'text-white'
-                                                        : darkMode ? 'text-gray-400' : 'text-gray-600'
+                                                        : 'text-gray-600'
                                                 }`}
                                             >
                                                 Dark
@@ -388,8 +388,8 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                     onClick={() => changeLanguage('en')}
                                     className={`flex-1 py-2 z-10 text-sm font-medium ${
                                         i18n.language === 'en'
-                                            ? 'text-white'
-                                            : darkMode ? 'text-gray-400' : 'text-gray-600'
+                                            ? (darkMode ? 'text-white' : 'text-gray-900')
+                                            : (darkMode ? 'text-gray-400' : 'text-gray-600')
                                     }`}
                                 >
                                     🇬🇧 EN
@@ -398,8 +398,8 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                     onClick={() => changeLanguage('pl')}
                                     className={`flex-1 py-2 z-10 text-sm font-medium ${
                                         i18n.language === 'pl'
-                                            ? 'text-white'
-                                            : darkMode ? 'text-gray-400' : 'text-gray-600'
+                                            ? (darkMode ? 'text-white' : 'text-gray-900')
+                                            : (darkMode ? 'text-gray-400' : 'text-gray-600')
                                     }`}
                                 >
                                     🇵🇱 PL
@@ -422,7 +422,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                 <button
                                     onClick={() => darkMode && toggleDarkMode()}
                                     className={`flex-1 py-2 z-10 text-sm font-medium ${
-                                        !darkMode ? 'text-gray-900' : darkMode ? 'text-gray-400' : 'text-gray-600'
+                                        !darkMode ? 'text-gray-900' : (darkMode ? 'text-gray-400' : 'text-gray-600')
                                     }`}
                                 >
                                     Light
@@ -430,7 +430,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                 <button
                                     onClick={() => !darkMode && toggleDarkMode()}
                                     className={`flex-1 py-2 z-10 text-sm font-medium ${
-                                        darkMode ? 'text-white' : darkMode ? 'text-gray-400' : 'text-gray-600'
+                                        darkMode ? 'text-white' : 'text-gray-600'
                                     }`}
                                 >
                                     Dark
