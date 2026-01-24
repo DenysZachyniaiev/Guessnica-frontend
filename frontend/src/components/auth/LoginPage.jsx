@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function LoginPage({ setIsLoggedIn }) {
@@ -68,8 +68,40 @@ export default function LoginPage({ setIsLoggedIn }) {
         }
     };
 
+    const [fbLoaded, setFbLoaded] = useState(false);
+
+    useEffect(() => {
+        const checkFB = setInterval(() => {
+            if (window.FB) {
+                setFbLoaded(true);
+                clearInterval(checkFB);
+            }
+        }, 100);
+    }, []);
+
     const handleFacebookLogin = () => {
-        window.location.href = `${API_BASE_URL}/auth/facebook`;
+        if (!fbLoaded) {
+            console.warn("FB SDK not loaded yet");
+            return;
+        }
+
+        window.FB.login(function(response) {
+            if (!response.authResponse) return;
+
+            const accessToken = response.authResponse.accessToken;
+            console.log("Facebook Access Token:", accessToken);
+            
+            fetch(`${API_BASE_URL}/auth/facebook`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ accessToken }),
+            })
+                .then(res => res.json())
+                .then(jwt => {
+                    localStorage.setItem("jwt", jwt.accessToken);
+                    window.location.href = "/";
+                });
+        }, { scope: "email,public_profile" });
     };
 
     return (
