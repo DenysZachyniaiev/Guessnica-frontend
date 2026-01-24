@@ -1,28 +1,65 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminDashboard() {
-    const [stats, setStats] = useState({
-        totalUsers: 0,
-        totalRiddles: 0,
-        activeUsers: 0,
-        pendingConfirmations: 0
-    });
+    const [stats, setStats] = useState({ totalUsers: 0, totalRiddles: 0, activeUsers: 0, totalSubmissions: 0, avgAnswersPerUser: 0, avgRiddlesAnswered: 0 });
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetch('/admin/dashboard/stats', {
-            headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` }
-        })
-            .then(r => r.json())
-            .then(data => {
-                setStats(data);
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error('Failed to fetch dashboard stats:', err);
-                setLoading(false);
-            });
+        fetchStats();
     }, []);
+
+    const fetchStats = async () => {
+        try {
+            const [userStatsRes, riddleStatsRes] = await Promise.all([
+                fetch('/admin/users/stats', { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } }),
+                fetch('/admin/riddles/stats', { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } })
+            ]);
+
+            if (!userStatsRes.ok || !riddleStatsRes.ok) {
+                throw new Error('Failed to fetch admin stats');
+            }
+
+            const userStatsRaw = await userStatsRes.json();
+            const riddleStatsRaw = await riddleStatsRes.json();
+
+            // bezpieczeństwo: jeśli backend zwróci obiekt zamiast listy
+            const userStats = Array.isArray(userStatsRaw) ? userStatsRaw : [];
+            const riddleStats = Array.isArray(riddleStatsRaw) ? riddleStatsRaw : [];
+
+            const totalSubmissions = riddleStats.reduce((sum, r) => sum + (r.timesAnswered ?? 0), 0);
+            const usersWhoAnswered = userStats.filter(u => (u.riddlesAnswered ?? 0) > 0).length;
+            const avgAnswersPerUser =
+                usersWhoAnswered > 0 ? totalSubmissions / usersWhoAnswered : 0;
+            const avgRiddlesAnswered =
+                usersWhoAnswered > 0
+                    ? userStats.reduce((sum, u) => sum + (u.riddlesAnswered ?? 0), 0) / usersWhoAnswered
+                    : 0;
+
+            setStats({
+                totalUsers: userStats.length,
+                totalRiddles: riddleStats.length,
+                activeUsers: userStats.length,
+                totalSubmissions,
+                avgAnswersPerUser,
+                avgRiddlesAnswered
+            });
+        } catch (err) {
+            console.error('Failed to fetch stats:', err);
+            setStats({
+                totalUsers: 0,
+                totalRiddles: 0,
+                activeUsers: 0,
+                totalSubmissions: 0,
+                avgAnswersPerUser: 0,
+                avgRiddlesAnswered: 0
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     if (loading) {
         return (
@@ -34,122 +71,102 @@ export default function AdminDashboard() {
 
     return (
         <div className="max-w-7xl mx-auto">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-                Admin Dashboard
-            </h1>
-
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8"> Admin Dashboard </h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
-                    <div className="flex items-center">
-                        <div className="flex-shrink-0 bg-sky-500 rounded-md p-3">
-                            <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                            </svg>
-                        </div>
-                        <div className="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                                    Total Users
-                                </dt>
-                                <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                                    {stats.totalUsers}
-                                </dd>
-                            </dl>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
-                    <div className="flex items-center">
-                        <div className="flex-shrink-0 bg-green-500 rounded-md p-3">
-                            <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <div className="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                                    Active Users
-                                </dt>
-                                <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                                    {stats.activeUsers}
-                                </dd>
-                            </dl>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
-                    <div className="flex items-center">
-                        <div className="flex-shrink-0 bg-purple-500 rounded-md p-3">
-                            <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                            </svg>
-                        </div>
-                        <div className="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                                    Total Riddles
-                                </dt>
-                                <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                                    {stats.totalRiddles}
-                                </dd>
-                            </dl>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
-                    <div className="flex items-center">
-                        <div className="flex-shrink-0 bg-yellow-500 rounded-md p-3">
-                            <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <div className="ml-5 w-0 flex-1">
-                            <dl>
-                                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                                    Pending Confirmations
-                                </dt>
-                                <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                                    {stats.pendingConfirmations}
-                                </dd>
-                            </dl>
-                        </div>
-                    </div>
-                </div>
+                <StatCard icon={<UsersIcon />} title="Total Users" value={stats.totalUsers} bgColor="bg-sky-500" />
+                <StatCard icon={<CheckIcon />} title="Active Users" value={stats.activeUsers} bgColor="bg-green-500" />
+                <StatCard icon={<PuzzleIcon />} title="Total Riddles" value={stats.totalRiddles} bgColor="bg-purple-500" />
+                <StatCard icon={<DocumentIcon />} title="Total Submissions" value={stats.totalSubmissions} bgColor="bg-yellow-500" />
             </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
-                    <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                        Recent Activity
-                    </h2>
-                    <div className="text-gray-500 dark:text-gray-400">
-                        No recent activity to display.
+                    <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4"> User Engagement </h2>
+                    <div className="space-y-4">
+                        <div className="flex justify-between items-center p-3 bg-sky-50 dark:bg-sky-900/20 rounded-lg">
+                            <span className="text-sm text-gray-600 dark:text-gray-400"> Avg answers per user </span>
+                            <span className="text-lg font-bold text-gray-900 dark:text-white"> {stats.avgAnswersPerUser.toFixed(1)} </span>
+                        </div>
+                        <div className="flex justify-between items-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                            <span className="text-sm text-gray-600 dark:text-gray-400"> Avg riddles per user </span>
+                            <span className="text-lg font-bold text-gray-900 dark:text-white"> {stats.avgRiddlesAnswered.toFixed(1)} </span>
+                        </div>
                     </div>
+                    {stats.avgRiddlesAnswered < stats.totalRiddles * 0.3 && stats.totalRiddles > 0 && (
+                        <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                            <p className="text-sm text-yellow-800 dark:text-yellow-200"> 💡 Users are answering less than 30% of riddles. Consider adding more engaging content! </p>
+                        </div>
+                    )}
                 </div>
-
                 <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
-                    <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                        Quick Actions
-                    </h2>
+                    <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4"> Quick Actions </h2>
                     <div className="space-y-3">
-                        <button className="w-full text-left px-4 py-3 bg-sky-50 dark:bg-sky-900/20 rounded-lg hover:bg-sky-100 dark:hover:bg-sky-900/30 transition-colors">
-                            <div className="font-medium text-sky-700 dark:text-sky-300">Add New Riddle</div>
-                            <div className="text-sm text-sky-600 dark:text-sky-400">Upload a new photo riddle</div>
-                        </button>
-                        <button className="w-full text-left px-4 py-3 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
-                            <div className="font-medium text-green-700 dark:text-green-300">Manage Users</div>
-                            <div className="text-sm text-green-600 dark:text-green-400">View and manage user accounts</div>
-                        </button>
-                        <button className="w-full text-left px-4 py-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors">
-                            <div className="font-medium text-purple-700 dark:text-purple-300">View Statistics</div>
-                            <div className="text-sm text-purple-600 dark:text-purple-400">Detailed game statistics</div>
-                        </button>
+                        <QuickAction to="/admin/riddles" bg="bg-sky-50 dark:bg-sky-900/20" title="Manage Riddles" subtitle="View stats and add new riddles" />
+                        <QuickAction to="/admin/locations" bg="bg-orange-50 dark:bg-orange-900/20" title="Manage Locations" subtitle="Add photos of places in your city" />
+                        <QuickAction to="/admin/settings" bg="bg-indigo-50 dark:bg-indigo-900/20" title="Game Settings" subtitle="Configure time limits and scoring" />
+                        <QuickAction to="/admin/users" bg="bg-purple-50 dark:bg-purple-900/20" title="Manage Users" subtitle="View and manage user accounts" />
                     </div>
                 </div>
             </div>
         </div>
+    );
+}
+
+function StatCard({ icon, title, value, bgColor }) {
+    return (
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+            <div className="flex items-center">
+                <div className={`flex-shrink-0 ${bgColor} rounded-md p-3`}>
+                    {icon}
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate"> {title} </dt>
+                        <dd className="text-lg font-medium text-gray-900 dark:text-white"> {value} </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function QuickAction({ to, bg, title, subtitle }) {
+    const navigate = useNavigate();
+    return (
+        <button onClick={() => navigate(to)} className={`${bg} block w-full text-left px-4 py-3 rounded-lg hover:opacity-95 transition-colors`}>
+            <div className="font-medium text-gray-800 dark:text-gray-200">{title}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">{subtitle}</div>
+        </button>
+    );
+}
+
+function UsersIcon() {
+    return (
+        <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+    );
+}
+
+function CheckIcon() {
+    return (
+        <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+    );
+}
+
+function PuzzleIcon() {
+    return (
+        <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+        </svg>
+    );
+}
+
+function DocumentIcon() {
+    return (
+        <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
     );
 }

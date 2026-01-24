@@ -3,6 +3,7 @@ import Header from './components/common/Header';
 import LoginPage from './components/auth/LoginPage';
 import RegisterPage from './components/auth/RegisterPage';
 import EmailConfirmationPage from './components/auth/EmailConfirmationPage';
+import ForgotPasswordPage from './components/auth/ForgotPasswordPage';
 /*import AdminUserCreator from './components/auth/AdminUserCreator';*/
 
 import Guess from "./components/game/Guess";
@@ -81,6 +82,8 @@ const App = () => {
                         <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn} />} />
                         <Route path="/register" element={<RegisterPage />} />
                         <Route path="/confirm-email" element={<EmailConfirmationPage />} />
+                        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
                         {/* Chronione strony - tylko dla zalogowanych */}
                         <Route path="/guess" element={isLoggedIn ? <Guess /> : <Navigate to="/login" />} />
                         <Route path="/user-panel" element={isLoggedIn ? <UserPanel /> : <Navigate to="/login" />} />
