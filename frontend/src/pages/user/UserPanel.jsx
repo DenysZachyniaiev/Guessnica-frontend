@@ -507,31 +507,7 @@ export default function UserPanel() {
                                 </div>
                             </div>
 
-                            <div className={`p-8 rounded-2xl transition-colors duration-300 ${
-                                darkMode
-                                    ? 'bg-gray-800/50 border-2 border-gray-700'
-                                    : 'bg-white border-2 border-gray-200 shadow-xl'
-                            }`}>
-                                <h3 className={`text-2xl font-black mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                                    ⚡ Quick Actions
-                                </h3>
-                                <div className="space-y-3">
-                                    {[
-                                        { label: 'Play New Game', icon: '🎮', path: '/guess', color: darkMode ? 'from-blue-600 to-cyan-600' : 'from-sky-600 to-blue-600' },
-                                        { label: 'Edit Profile', icon: '✏️', path: '/profile', color: darkMode ? 'from-purple-600 to-pink-600' : 'from-purple-600 to-pink-600' },
-                                        { label: "View Today's Riddle", icon: '🎯', path: '/', color: darkMode ? 'from-green-600 to-emerald-600' : 'from-green-600 to-emerald-600' }
-                                    ].map((action, idx) => (
-                                        <button
-                                            key={idx}
-                                            onClick={() => navigate(action.path)}
-                                            className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg bg-gradient-to-r ${action.color} text-white`}
-                                        >
-                                            <span className="text-xl">{action.icon}</span>
-                                            <span>{action.label}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                            {/* Quick Actions removed per UX decision */}
                         </div>
                     )}
 

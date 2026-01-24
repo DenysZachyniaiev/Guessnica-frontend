@@ -78,7 +78,7 @@ export default function AdminDashboard() {
                 <StatCard icon={<PuzzleIcon />} title="Total Riddles" value={stats.totalRiddles} bgColor="bg-purple-500" />
                 <StatCard icon={<DocumentIcon />} title="Total Submissions" value={stats.totalSubmissions} bgColor="bg-yellow-500" />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8">
                 <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
                     <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4"> User Engagement </h2>
                     <div className="space-y-4">
@@ -96,15 +96,6 @@ export default function AdminDashboard() {
                             <p className="text-sm text-yellow-800 dark:text-yellow-200"> 💡 Users are answering less than 30% of riddles. Consider adding more engaging content! </p>
                         </div>
                     )}
-                </div>
-                <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
-                    <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4"> Quick Actions </h2>
-                    <div className="space-y-3">
-                        <QuickAction to="/admin/riddles" bg="bg-sky-50 dark:bg-sky-900/20" title="Manage Riddles" subtitle="View stats and add new riddles" />
-                        <QuickAction to="/admin/locations" bg="bg-orange-50 dark:bg-orange-900/20" title="Manage Locations" subtitle="Add photos of places in your city" />
-                        <QuickAction to="/admin/settings" bg="bg-indigo-50 dark:bg-indigo-900/20" title="Game Settings" subtitle="Configure time limits and scoring" />
-                        <QuickAction to="/admin/users" bg="bg-purple-50 dark:bg-purple-900/20" title="Manage Users" subtitle="View and manage user accounts" />
-                    </div>
                 </div>
             </div>
         </div>
@@ -129,15 +120,7 @@ function StatCard({ icon, title, value, bgColor }) {
     );
 }
 
-function QuickAction({ to, bg, title, subtitle }) {
-    const navigate = useNavigate();
-    return (
-        <button onClick={() => navigate(to)} className={`${bg} block w-full text-left px-4 py-3 rounded-lg hover:opacity-95 transition-colors`}>
-            <div className="font-medium text-gray-800 dark:text-gray-200">{title}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">{subtitle}</div>
-        </button>
-    );
-}
+// QuickAction removed per UX decision.
 
 function UsersIcon() {
     return (
