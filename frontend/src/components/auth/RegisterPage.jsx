@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function RegisterPage() {
@@ -11,6 +11,12 @@ export default function RegisterPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (localStorage.getItem('jwt')) {
+            navigate('/welcome');
+        }
+    }, [navigate]);
 
     const handleChange = (e) => {
         setFormData({

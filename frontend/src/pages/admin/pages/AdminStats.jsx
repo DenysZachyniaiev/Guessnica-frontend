@@ -19,32 +19,35 @@ export default function AdminStats() {
 
     const load = async () => {
         try {
-            const [userRes, riddleRes] = await Promise.all([
+            const [userRes, riddleRes, settingsRes] = await Promise.all([
                 fetch('/admin/users/stats', { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } }),
-                fetch('/admin/riddles/stats', { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } })
+                fetch('/admin/riddles/stats', { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } }),
+                fetch('/admin/settings', { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } }).catch(() => null)
             ]);
-            const userData = await userRes.json();
-            const riddleData = await riddleRes.json();
+            const userData = userRes ? await userRes.json() : [];
+            const riddleData = riddleRes ? await riddleRes.json() : [];
+            const settingsData = settingsRes && settingsRes.ok ? await settingsRes.json() : null;
 
-            const totalSubmissions = riddleData.reduce((sum, r) => sum + r.timesAnswered, 0);
-            const totalScores = riddleData.reduce((sum, r) => sum + (r.avgScore * r.timesAnswered || 0), 0);
+            const totalSubmissions = (riddleData || []).reduce((sum, r) => sum + (r.timesAnswered || 0), 0);
+            const totalScores = (riddleData || []).reduce((sum, r) => sum + ((r.avgScore || 0) * (r.timesAnswered || 0)), 0);
             const avgScore = totalSubmissions > 0 ? totalScores / totalSubmissions : 0;
-            const totalTimes = riddleData.reduce((sum, r) => sum + (r.avgTimeSeconds * r.timesAnswered || 0), 0);
+            const totalTimes = (riddleData || []).reduce((sum, r) => sum + ((r.avgTimeSeconds || 0) * (r.timesAnswered || 0)), 0);
             const avgTime = totalSubmissions > 0 ? totalTimes / totalSubmissions : 0;
-            const totalDistances = riddleData.reduce((sum, r) => sum + (r.avgDistanceMeters * r.timesAnswered || 0), 0);
+            const totalDistances = (riddleData || []).reduce((sum, r) => sum + ((r.avgDistanceMeters || 0) * (r.timesAnswered || 0)), 0);
             const avgDistance = totalSubmissions > 0 ? totalDistances / totalSubmissions : 0;
 
-            const topUsers = userData.sort((a, b) => b.totalScore - a.totalScore).slice(0, 5).map(u => ({ userId: u.displayName, totalScore: u.totalScore || 0 }));
+            const topUsers = (userData || []).sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0)).slice(0, 5).map(u => ({ userId: u.displayName || u.userId || 'User', totalScore: u.totalScore || 0 }));
 
             setStats({
-                UsersTotal: userData.length,
+                UsersTotal: (userData || []).length,
                 UsersBlocked: 0, // No info
-                RiddlesTotal: riddleData.length,
+                RiddlesTotal: (riddleData || []).length,
                 SubmissionsTotal: totalSubmissions,
                 AvgScore: avgScore,
                 AvgTime: avgTime,
                 AvgDistance: avgDistance,
-                TopUsers: topUsers
+                TopUsers: topUsers,
+                Settings: settingsData
             });
         } catch (e) {
             console.error(e);
@@ -197,6 +200,31 @@ export default function AdminStats() {
                         </div>
                     </div>
                 </div>
+
+                {/* Game Settings (if available) */}
+                {stats && stats.Settings && (
+                    <div className="mb-8 p-6 rounded-2xl bg-white border-2 border-gray-200 shadow-xl">
+                        <h2 className={`text-2xl font-black mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>⚙️ Current Game Settings</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="p-4 bg-gray-50 rounded">
+                                <div className="text-sm text-gray-500">Base Points</div>
+                                <div className="font-semibold text-lg">{stats.Settings.basePoints ?? stats.Settings.BasePoints ?? '—'}</div>
+                            </div>
+                            <div className="p-4 bg-gray-50 rounded">
+                                <div className="text-sm text-gray-500">Default Time Limit (s)</div>
+                                <div className="font-semibold text-lg">{stats.Settings.timeLimitSeconds ?? stats.Settings.TimeLimitSeconds ?? '—'}</div>
+                            </div>
+                            <div className="p-4 bg-gray-50 rounded">
+                                <div className="text-sm text-gray-500">Max Distance (m)</div>
+                                <div className="font-semibold text-lg">{stats.Settings.maxDistanceMeters ?? stats.Settings.MaxDistanceMeters ?? '—'}</div>
+                            </div>
+                            <div className="p-4 bg-gray-50 rounded">
+                                <div className="text-sm text-gray-500">Allow Hints</div>
+                                <div className="font-semibold text-lg">{stats.Settings.allowHints != null ? String(stats.Settings.allowHints) : (stats.Settings.AllowHints != null ? String(stats.Settings.AllowHints) : '—')}</div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Top Users */}
                 <div className={`p-8 rounded-2xl ${

@@ -60,7 +60,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
     const bottomBarClass = isMobileMenuOpen ? '-rotate-45 -translate-y-1.5' : '';
 
     return (
-        <header className="relative z-50">
+        <header className="relative z-[10050]">
             <nav className={`shadow-xl backdrop-blur-lg border-b transition-colors duration-300 ${
                 darkMode
                     ? 'bg-gray-900/95 border-gray-800'
@@ -147,7 +147,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                     </svg>
                                     <span>Settings</span>
                                 </button>
-                                <div className={`dropdown-menu absolute right-0 top-full mt-3 ${dropdownVisibilityClass} rounded-2xl w-72 shadow-2xl overflow-hidden z-50 transition-colors duration-300 ${
+                                <div className={`dropdown-menu absolute right-0 top-full mt-3 ${dropdownVisibilityClass} rounded-2xl w-72 shadow-2xl overflow-hidden z-[10060] transition-colors duration-300 ${
                                     darkMode
                                         ? 'bg-gray-800 border-2 border-gray-700'
                                         : 'bg-white border-2 border-gray-200'
@@ -184,8 +184,8 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                                 onClick={() => changeLanguage('en')}
                                                 className={`flex-1 py-2 z-10 text-sm font-medium transition-colors ${
                                                     i18n.language === 'en'
-                                                        ? 'text-white'
-                                                        : darkMode ? 'text-gray-400' : 'text-gray-600'
+                                                        ? (darkMode ? 'text-white' : 'text-gray-900')
+                                                        : (darkMode ? 'text-gray-400' : 'text-gray-600')
                                                 }`}
                                             >
                                                 🇬🇧 EN
@@ -194,8 +194,8 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                                 onClick={() => changeLanguage('pl')}
                                                 className={`flex-1 py-2 z-10 text-sm font-medium transition-colors ${
                                                     i18n.language === 'pl'
-                                                        ? 'text-white'
-                                                        : darkMode ? 'text-gray-400' : 'text-gray-600'
+                                                        ? (darkMode ? 'text-white' : 'text-gray-900')
+                                                        : (darkMode ? 'text-gray-400' : 'text-gray-600')
                                                 }`}
                                             >
                                                 🇵🇱 PL
@@ -219,8 +219,8 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                                 onClick={() => darkMode && toggleDarkMode()}
                                                 className={`flex-1 py-2 z-10 text-sm font-medium transition-colors ${
                                                     !darkMode
-                                                        ? darkMode ? 'text-gray-900' : 'text-gray-900'
-                                                        : darkMode ? 'text-gray-400' : 'text-gray-600'
+                                                        ? 'text-gray-900'
+                                                        : (darkMode ? 'text-gray-400' : 'text-gray-600')
                                                 }`}
                                             >
                                                 Light
@@ -230,7 +230,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                                 className={`flex-1 py-2 z-10 text-sm font-medium transition-colors ${
                                                     darkMode
                                                         ? 'text-white'
-                                                        : darkMode ? 'text-gray-400' : 'text-gray-600'
+                                                        : 'text-gray-600'
                                                 }`}
                                             >
                                                 Dark
@@ -293,7 +293,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
             </nav>
 
             {/* Mobile Menu */}
-            <div className={`${mobileMenuHeightClass} overflow-hidden transition-all duration-500 flex flex-col items-center md:hidden shadow-lg ${
+            <div className={`${mobileMenuHeightClass} overflow-hidden transition-all duration-500 flex flex-col items-center md:hidden shadow-lg z-[10050] ${
                 darkMode ? 'bg-gray-900' : 'bg-white'
             }`}>
                 {isLoggedIn ? (
@@ -388,8 +388,8 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                     onClick={() => changeLanguage('en')}
                                     className={`flex-1 py-2 z-10 text-sm font-medium ${
                                         i18n.language === 'en'
-                                            ? 'text-white'
-                                            : darkMode ? 'text-gray-400' : 'text-gray-600'
+                                            ? (darkMode ? 'text-white' : 'text-gray-900')
+                                            : (darkMode ? 'text-gray-400' : 'text-gray-600')
                                     }`}
                                 >
                                     🇬🇧 EN
@@ -398,8 +398,8 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                     onClick={() => changeLanguage('pl')}
                                     className={`flex-1 py-2 z-10 text-sm font-medium ${
                                         i18n.language === 'pl'
-                                            ? 'text-white'
-                                            : darkMode ? 'text-gray-400' : 'text-gray-600'
+                                            ? (darkMode ? 'text-white' : 'text-gray-900')
+                                            : (darkMode ? 'text-gray-400' : 'text-gray-600')
                                     }`}
                                 >
                                     🇵🇱 PL
@@ -422,7 +422,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                 <button
                                     onClick={() => darkMode && toggleDarkMode()}
                                     className={`flex-1 py-2 z-10 text-sm font-medium ${
-                                        !darkMode ? 'text-gray-900' : darkMode ? 'text-gray-400' : 'text-gray-600'
+                                        !darkMode ? 'text-gray-900' : (darkMode ? 'text-gray-400' : 'text-gray-600')
                                     }`}
                                 >
                                     Light
@@ -430,7 +430,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                 <button
                                     onClick={() => !darkMode && toggleDarkMode()}
                                     className={`flex-1 py-2 z-10 text-sm font-medium ${
-                                        darkMode ? 'text-white' : darkMode ? 'text-gray-400' : 'text-gray-600'
+                                        darkMode ? 'text-white' : 'text-gray-600'
                                     }`}
                                 >
                                     Dark
