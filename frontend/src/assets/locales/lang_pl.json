@@ -1,0 +1,81 @@
+{
+  "admin": {
+    "title": "Panel Admina",
+    "riddleStats": "Statystyki Zagadek",
+    "userStats": "Statystyki Użytkowników",
+    "submissions": "Wszystkie Odpowiedzi"
+  },
+  "ui": {
+    "dark": "Tryb ciemny",
+    "light": "Tryb jasny",
+    "language": "Język"
+  },
+  "welcome": {
+    "title": "Witaj w Guessnica",
+    "subtitle": "Sprawdź swoje umiejętności geograficzne w codziennych wyzwaniach",
+    "btn_signin": "Zaloguj się",
+    "btn_register": "Załóż konto",
+    "btn_get_started": "Zacznij teraz",
+    "ready_text": "Gotowy na start swojej geograficznej przygody?",
+    "features": {
+      "daily_title": "Codzienne wyzwania",
+      "daily_desc": "Codziennie nowe zagadki, aby sprawdzić swoją wiedzę",
+      "compete_title": "Rywalizuj i wygrywaj",
+      "compete_desc": "Wspinaj się w rankingu i zostań najlepszym graczem",
+      "track_title": "Śledź postępy",
+      "track_desc": "Monitoruj swoje statystyki i poprawiaj wiedzę o Legnicy"
+    },
+    "how_it_works": {
+      "title": "Jak to działa",
+      "step1": "Zobacz wyzwanie",
+      "step1_desc": "Obejrzyj zdjęcie z dzisiejszą zagadką",
+      "step2": "Zgadnij lokalizację",
+      "step2_desc": "Kliknij na mapę, aby zgadnąć",
+      "step3": "Sprawdź wynik",
+      "step3_desc": "Zobacz jak blisko byłeś celu",
+      "step4": "Rankingi",
+      "step4_desc": "Rywalizuj z innymi graczami"
+    },
+    "footer": "© 2026 Guessnica. Codziennie sprawdzaj swoją wiedzę geograficzną."
+  },
+  "auth": {
+    "login_title": "Witaj Ponownie",
+    "login_subtitle": "Zaloguj się do swojego konta, aby kontynuować",
+    "email_label": "Adres Email",
+    "password_label": "Hasło",
+    "remember_me": "Zapamiętaj mnie",
+    "forgot_password": "Zapomniałeś hasła?",
+    "sign_in_btn": "Zaloguj się",
+    "signing_in": "Logowanie...",
+    "or_continue": "Lub kontynuuj przez",
+    "facebook_btn": "Kontynuuj przez Facebook",
+    "no_account": "Nie masz konta?",
+    "sign_up": "Zarejestruj się",
+    "footer_agree": "Logując się, akceptujesz nasze",
+    "and": "oraz",
+    "terms": "Warunki Korzystania",
+    "privacy": "Politykę Prywatności",
+    "errors": {
+      "invalid_server": "Serwer zwrócił nieprawidłową odpowiedź. Sprawdź, czy API działa.",
+      "no_token": "Nie otrzymano tokenu z serwera",
+      "conn_refused": "Nie można połączyć się z serwerem. Sprawdź połączenie z API.",
+      "generic_fail": "Logowanie nieudane. Sprawdź swoje dane."
+    }
+  },
+  "nav": {
+    "guess": "Graj",
+    "user_panel": "Panel gracza",
+    "leaderboard": "Ranking",
+    "home": "Start",
+    "signin": "Zaloguj się",
+    "settings": "Ustawienia",
+    "general_settings": "Ustawienia ogólne",
+    "language": "Język",
+    "theme": "Motyw",
+    "theme_light": "Jasny",
+    "theme_dark": "Ciemny",
+    "customize_theme": "Dostosuj motyw",
+    "logout": "Wyloguj"
+  }
+  
+}

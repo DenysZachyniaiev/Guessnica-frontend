@@ -1,0 +1,82 @@
+{
+  "admin": {
+    "title": "Admin Panel",
+    "riddleStats": "Riddle Statistics",
+    "userStats": "User Statistics",
+    "submissions": "All Submissions"
+  },
+  "ui": {
+    "dark": "Dark mode",
+    "light": "Light mode",
+    "language": "Language"
+  },
+  "welcome": {
+    "title": "Welcome to Guessnica",
+    "subtitle": "Test your geography skills with daily location challenges",
+    "btn_signin": "Sign In",
+    "btn_register": "Create Account",
+    "btn_get_started": "Get Started Now",
+    "ready_text": "Ready to start your geography adventure?",
+    "features": {
+      "daily_title": "Daily Challenges",
+      "daily_desc": "New location puzzles every day to test your knowledge",
+      "compete_title": "Compete & Win",
+      "compete_desc": "Climb the leaderboard and become the top guesser",
+      "track_title": "Track Progress",
+      "track_desc": "Monitor your stats and improve your geography skills"
+    },
+    "how_it_works": {
+      "title": "How It Works",
+      "step1": "View Challenge",
+      "step1_desc": "See the daily location photo",
+      "step2": "Make Your Guess",
+      "step2_desc": "Click on the map to guess",
+      "step3": "Get Your Score",
+      "step3_desc": "See how close you were",
+      "step4": "Climb Rankings",
+      "step4_desc": "Compete with others"
+    },
+    "footer": "© 2026 Guessnica. Test your geography knowledge daily."
+  },
+
+  "auth": {
+    "login_title": "Welcome Back",
+    "login_subtitle": "Sign in to your account to continue",
+    "email_label": "Email Address",
+    "password_label": "Password",
+    "remember_me": "Remember me",
+    "forgot_password": "Forgot password?",
+    "sign_in_btn": "Sign In",
+    "signing_in": "Signing in...",
+    "or_continue": "Or continue with",
+    "facebook_btn": "Continue with Facebook",
+    "no_account": "Don't have an account?",
+    "sign_up": "Sign up",
+    "footer_agree": "By signing in, you agree to our",
+    "and": "and",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "errors": {
+      "invalid_server": "Server returned invalid response. Please check if the API is running.",
+      "no_token": "No token received from server",
+      "conn_refused": "Cannot connect to server. Please check if the API is running.",
+      "generic_fail": "Login failed. Please check your credentials."
+    }
+  },
+  "nav": {
+    "guess": "Guess",
+    "user_panel": "User Panel",
+    "leaderboard": "Leaderboard",
+    "home": "Home",
+    "signin": "Sign In",
+    "settings": "Settings",
+    "general_settings": "General Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "customize_theme": "Customize Theme",
+    "logout": "Logout"
+  }
+
+}

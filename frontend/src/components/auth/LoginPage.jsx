@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function LoginPage({ setIsLoggedIn }) {
+    const { t } = useTranslation();
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8082';
 
     const [formData, setFormData] = useState({
@@ -44,13 +46,13 @@ export default function LoginPage({ setIsLoggedIn }) {
 
             if (!contentType || !contentType.includes('application/json')) {
                 const textResponse = await response.text();
-                throw new Error('Server returned invalid response. Please check if the API is running.');
+                throw new Error(t('auth.errors.invalid_server'));
             }
 
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || `Login failed with status: ${response.status}`);
+                throw new Error(data.message || t('auth.errors.generic_fail'));
             }
 
             if (data.token) {
@@ -61,13 +63,13 @@ export default function LoginPage({ setIsLoggedIn }) {
 
                 navigate('/user-panel');
             } else {
-                throw new Error('No token received from server');
+                throw new Error(t('auth.errors.no_token'));
             }
         } catch (err) {
             if (err.name === 'TypeError' && err.message.includes('fetch')) {
-                setError('Cannot connect to server. Please check if the API is running.');
+                setError(t('auth.errors.conn_refused'));
             } else {
-                setError(err.message || 'Login failed. Please check your credentials.');
+                setError(err.message || t('auth.errors.generic_fail'));
             }
         } finally {
             setLoading(false);
@@ -96,7 +98,7 @@ export default function LoginPage({ setIsLoggedIn }) {
 
             const accessToken = response.authResponse.accessToken;
             console.log("Facebook Access Token:", accessToken);
-            
+
             fetch(`${API_BASE_URL}/auth/facebook`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -116,10 +118,10 @@ export default function LoginPage({ setIsLoggedIn }) {
                 {/* Logo/Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                        Welcome Back
+                        {t('auth.login_title')}
                     </h1>
                     <p className="text-gray-600 dark:text-gray-400">
-                        Sign in to your account to continue
+                        {t('auth.login_subtitle')}
                     </p>
                 </div>
 
@@ -137,7 +139,7 @@ export default function LoginPage({ setIsLoggedIn }) {
                                 htmlFor="email"
                                 className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                             >
-                                Email Address
+                                {t('auth.email_label')}
                             </label>
                             <input
                                 type="email"
@@ -160,7 +162,7 @@ export default function LoginPage({ setIsLoggedIn }) {
                                 htmlFor="password"
                                 className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                             >
-                                Password
+                                {t('auth.password_label')}
                             </label>
                             <input
                                 type="password"
@@ -185,7 +187,7 @@ export default function LoginPage({ setIsLoggedIn }) {
                                     className="w-4 h-4 text-sky-600 border-gray-300 rounded focus:ring-sky-500"
                                 />
                                 <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
-                                    Remember me
+                                    {t('auth.remember_me')}
                                 </span>
                             </label>
                             <button
@@ -193,7 +195,7 @@ export default function LoginPage({ setIsLoggedIn }) {
                                 className="text-sm text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300"
                                 onClick={() => navigate('/forgot-password')}
                             >
-                                Forgot password?
+                                {t('auth.forgot_password')}
                             </button>
                         </div>
 
@@ -222,10 +224,10 @@ export default function LoginPage({ setIsLoggedIn }) {
                                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                         />
                                     </svg>
-                                    Signing in...
+                                    {t('auth.signing_in')}
                                 </span>
                             ) : (
-                                'Sign In'
+                                t('auth.sign_in_btn')
                             )}
                         </button>
                     </form>
@@ -237,7 +239,7 @@ export default function LoginPage({ setIsLoggedIn }) {
                             </div>
                             <div className="relative flex justify-center text-sm">
                                 <span className="px-2 bg-white dark:bg-slate-800 text-gray-500 dark:text-gray-400">
-                                    Or continue with
+                                    {t('auth.or_continue')}
                                 </span>
                             </div>
                         </div>
@@ -253,30 +255,30 @@ export default function LoginPage({ setIsLoggedIn }) {
                             <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                             </svg>
-                            Continue with Facebook
+                            {t('auth.facebook_btn')}
                         </button>
                     </div>
 
                     <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-                        Don't have an account?{' '}
+                        {t('auth.no_account')}{' '}
                         <button
                             onClick={() => navigate('/register')}
                             className="font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300"
                         >
-                            Sign up
+                            {t('auth.sign_up')}
                         </button>
                     </p>
                 </div>
 
                 {/* Footer */}
                 <p className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
-                    By signing in, you agree to our{' '}
+                    {t('auth.footer_agree')}{' '}
                     <button className="text-sky-600 hover:text-sky-700 dark:text-sky-400">
-                        Terms of Service
+                        {t('auth.terms')}
                     </button>{' '}
-                    and{' '}
+                    {t('auth.and')}{' '}
                     <button className="text-sky-600 hover:text-sky-700 dark:text-sky-400">
-                        Privacy Policy
+                        {t('auth.privacy')}
                     </button>
                 </p>
             </div>
