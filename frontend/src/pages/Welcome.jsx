@@ -4,6 +4,7 @@ import logoImg from '../assets/logo.png';
 
 export default function Welcome() {
     const [darkMode, setDarkMode] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('jwt'));
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,9 +23,16 @@ export default function Welcome() {
             setDarkMode(isDark);
         }, 100);
 
+        // auth status watcher (in case login/logout happens in other tab)
+        const checkAuth = () => setIsLoggedIn(!!localStorage.getItem('jwt'));
+        window.addEventListener('storage', checkAuth);
+        const authInterval = setInterval(checkAuth, 500);
+
         return () => {
             window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('storage', checkAuth);
             clearInterval(interval);
+            clearInterval(authInterval);
         };
     }, []);
 
@@ -58,28 +66,30 @@ export default function Welcome() {
                         }`}>
                             Test your geography skills with daily location challenges
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                            <button
-                                onClick={() => navigate('/login')}
-                                className={`px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl ${
-                                    darkMode
-                                        ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-900/50'
-                                        : 'bg-sky-600 hover:bg-sky-500 text-white shadow-sky-900/30'
-                                }`}
-                            >
-                                Sign In
-                            </button>
-                            <button
-                                onClick={() => navigate('/register')}
-                                className={`px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 border-2 ${
-                                    darkMode
-                                        ? 'border-blue-500 text-blue-400 hover:bg-blue-500/10'
-                                        : 'border-sky-600 text-sky-700 hover:bg-sky-50'
-                                }`}
-                            >
-                                Create Account
-                            </button>
-                        </div>
+                        {!isLoggedIn && (
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                                <button
+                                    onClick={() => navigate('/login')}
+                                    className={`px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl ${
+                                        darkMode
+                                            ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-900/50'
+                                            : 'bg-sky-600 hover:bg-sky-500 text-white shadow-sky-900/30'
+                                    }`}
+                                >
+                                    Sign In
+                                </button>
+                                <button
+                                    onClick={() => navigate('/register')}
+                                    className={`px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 border-2 ${
+                                        darkMode
+                                            ? 'border-blue-500 text-blue-400 hover:bg-blue-500/10'
+                                            : 'border-sky-600 text-sky-700 hover:bg-sky-50'
+                                    }`}
+                                >
+                                    Create Account
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     {/* Features Grid */}

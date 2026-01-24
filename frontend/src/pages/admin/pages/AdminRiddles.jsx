@@ -11,10 +11,17 @@ export default function AdminRiddles() {
     const [editingRiddle, setEditingRiddle] = useState(null);
     const [formData, setFormData] = useState({
         Description: '',
+        ShortDescription: '',
         Difficulty: 1,
         LocationId: 0,
+        Answers: '',
+        Hints: '',
+        IsActive: true,
+        BasePoints: 500,
         TimeLimitSeconds: 3600,
-        MaxDistanceMeters: 100
+        MaxDistanceMeters: 100,
+        ImageFile: null,
+        ImageUrl: ''
     });
 
     useEffect(() => {
@@ -25,18 +32,32 @@ export default function AdminRiddles() {
         if (editingRiddle) {
             setFormData({
                 Description: editingRiddle.description,
+                ShortDescription: editingRiddle.shortDescription || '',
                 Difficulty: editingRiddle.difficulty,
                 LocationId: editingRiddle.locationId,
+                Answers: (editingRiddle.answers && editingRiddle.answers.join(',')) || '',
+                Hints: (editingRiddle.hints && editingRiddle.hints.join('\n')) || '',
+                IsActive: editingRiddle.isActive ?? true,
+                BasePoints: editingRiddle.basePoints ?? 500,
+                ImageUrl: editingRiddle.imageUrl || '',
                 TimeLimitSeconds: editingRiddle.timeLimitSeconds,
-                MaxDistanceMeters: editingRiddle.maxDistanceMeters
+                MaxDistanceMeters: editingRiddle.maxDistanceMeters,
+                ImageFile: null
             });
         } else {
             setFormData({
                 Description: '',
+                ShortDescription: '',
                 Difficulty: 1,
                 LocationId: 0,
+                Answers: '',
+                Hints: '',
+                IsActive: true,
+                BasePoints: 500,
+                ImageUrl: '',
                 TimeLimitSeconds: 3600,
-                MaxDistanceMeters: 100
+                MaxDistanceMeters: 100,
+                ImageFile: null
             });
         }
     }, [editingRiddle]);
@@ -65,19 +86,57 @@ export default function AdminRiddles() {
     };
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value, files, type } = e.target;
+        if (type === 'file') {
+            setFormData({ ...formData, ImageFile: files && files[0] });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
 
     const handleSubmit = async () => {
         const url = editingRiddle ? `/riddles/${editingRiddle.id}` : '/riddles';
         const method = editingRiddle ? 'PUT' : 'POST';
 
-        try {
-            const response = await fetch(url, {
-                method,
-                headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
+            try {
+            let response;
+            // If an image file is provided, use FormData multipart upload
+            if (formData.ImageFile) {
+                const fd = new FormData();
+                fd.append('image', formData.ImageFile);
+                fd.append('Description', formData.Description);
+                fd.append('ShortDescription', formData.ShortDescription || '');
+                fd.append('Difficulty', formData.Difficulty);
+                fd.append('LocationId', formData.LocationId);
+                fd.append('TimeLimitSeconds', formData.TimeLimitSeconds);
+                fd.append('MaxDistanceMeters', formData.MaxDistanceMeters);
+                fd.append('Answers', formData.Answers || '');
+                fd.append('Hints', formData.Hints || '');
+                fd.append('IsActive', formData.IsActive ? 'true' : 'false');
+                fd.append('BasePoints', formData.BasePoints ?? 0);
+
+                response = await fetch(url, {
+                    method,
+                    headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` },
+                    body: fd
+                });
+            } else {
+                // send JSON payload
+                const payload = { ...formData };
+                // convert Answers CSV to array if present
+                if (payload.Answers) payload.Answers = payload.Answers.split(',').map(a => a.trim()).filter(Boolean);
+                if (payload.Hints) payload.Hints = payload.Hints.split('\n').map(h => h.trim()).filter(Boolean);
+                // ensure typed fields
+                payload.IsActive = !!payload.IsActive;
+                payload.BasePoints = Number(payload.BasePoints) || 0;
+
+                response = await fetch(url, {
+                    method,
+                    headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            }
+
             if (response.ok) {
                 fetchData();
                 setShowFormModal(false);
@@ -183,10 +242,64 @@ export default function AdminRiddles() {
                 )}
             </div>
             {showStatsModal && selectedRiddle && (
-                // ... (keep the existing stats modal code)
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                        {/* ... existing content ... */}
+                        <div className="flex justify-between items-start mb-4">
+                            <div>
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Riddle Stats: {selectedRiddle.shortDescription || selectedRiddle.riddleId}</h2>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">{selectedRiddle.description}</p>
+                            </div>
+                            <div>
+                                <button onClick={() => setShowStatsModal(false)} className="text-sm px-3 py-1 bg-gray-100 dark:bg-slate-700 rounded">Close</button>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div className="p-4 bg-gray-50 dark:bg-slate-700 rounded">
+                                <div className="text-sm text-gray-500">Answers</div>
+                                <div className="font-semibold text-lg">{selectedRiddle.timesAnswered ?? 0}</div>
+                            </div>
+                            <div className="p-4 bg-gray-50 dark:bg-slate-700 rounded">
+                                <div className="text-sm text-gray-500">Avg Score</div>
+                                <div className="font-semibold text-lg">{selectedRiddle.avgScore != null ? selectedRiddle.avgScore.toFixed(1) : 'N/A'}</div>
+                            </div>
+                            <div className="p-4 bg-gray-50 dark:bg-slate-700 rounded">
+                                <div className="text-sm text-gray-500">Avg Time</div>
+                                <div className="font-semibold text-lg">{selectedRiddle.avgTimeSeconds != null ? `${selectedRiddle.avgTimeSeconds.toFixed(1)}s` : 'N/A'}</div>
+                            </div>
+                        </div>
+
+                        <div className="mb-4">
+                            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Recent Submissions</h3>
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full text-sm">
+                                    <thead>
+                                        <tr className="text-left border-b">
+                                            <th className="py-2 pr-4">User</th>
+                                            <th className="py-2 pr-4">Distance (m)</th>
+                                            <th className="py-2 pr-4">Time (s)</th>
+                                            <th className="py-2 pr-4">Score</th>
+                                            <th className="py-2 pr-4">Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y">
+                                        {(selectedRiddle.submissions || []).slice(0, 50).map((s, i) => (
+                                            <tr key={i} className="hover:bg-gray-50 dark:hover:bg-slate-700">
+                                                <td className="py-2 pr-4">{s.displayName || s.userId || '—'}</td>
+                                                <td className="py-2 pr-4">{Math.round(s.distanceMeters ?? s.distance ?? s.distanceMeters ?? 0)}</td>
+                                                <td className="py-2 pr-4">{(s.timeSeconds ?? s.time ?? s.timeSpent ?? 0)}</td>
+                                                <td className="py-2 pr-4">{Math.round(s.score ?? s.points ?? 0)}</td>
+                                                <td className="py-2 pr-4">{s.createdAt ? new Date(s.createdAt).toLocaleString() : (s.date ? new Date(s.date).toLocaleString() : '—')}</td>
+                                            </tr>
+                                        ))}
+                                        {(!selectedRiddle.submissions || selectedRiddle.submissions.length === 0) && (
+                                            <tr><td colSpan={5} className="py-4 text-center text-gray-500">No submissions yet</td></tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             )}
@@ -195,7 +308,8 @@ export default function AdminRiddles() {
                     <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-md w-full">
                         <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4"> {editingRiddle ? 'Edit Riddle' : 'Add New Riddle'} </h3>
                         <div className="space-y-4">
-                            <input name="Description" value={formData.Description} onChange={handleChange} placeholder="Description" className="w-full p-2 border rounded" />
+                            <input name="ShortDescription" value={formData.ShortDescription} onChange={handleChange} placeholder="Short Description (shown in lists)" className="w-full p-2 border rounded" />
+                            <input name="Description" value={formData.Description} onChange={handleChange} placeholder="Full Description" className="w-full p-2 border rounded" />
                             <select name="Difficulty" value={formData.Difficulty} onChange={handleChange} className="w-full p-2 border rounded">
                                 <option value={1}>Easy (1)</option>
                                 <option value={2}>Medium (2)</option>
@@ -207,6 +321,25 @@ export default function AdminRiddles() {
                                     <option key={loc.id} value={loc.id}>{loc.shortDescription}</option>
                                 ))}
                             </select>
+                            <textarea name="Answers" value={formData.Answers} onChange={handleChange} placeholder="Answers (comma separated)" className="w-full p-2 border rounded" rows={3} />
+                            <textarea name="Hints" value={formData.Hints} onChange={handleChange} placeholder="Hints (one per line)" className="w-full p-2 border rounded" rows={3} />
+                            <div className="flex items-center gap-4">
+                                <label className="flex items-center gap-2">
+                                    <input type="checkbox" name="IsActive" checked={!!formData.IsActive} onChange={(e)=>setFormData({...formData, IsActive: e.target.checked})} />
+                                    <span className="text-sm">Active</span>
+                                </label>
+                                <input name="BasePoints" value={formData.BasePoints} onChange={handleChange} placeholder="Base Points" type="number" className="p-2 border rounded w-32" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Image</label>
+                                <input type="file" name="ImageFile" accept="image/*" onChange={handleChange} className="w-full" />
+                                {formData.ImageFile && (
+                                    <img src={URL.createObjectURL(formData.ImageFile)} alt="preview" className="mt-2 h-24 w-24 object-cover rounded" />
+                                )}
+                                {!formData.ImageFile && formData.ImageUrl && (
+                                    <img src={formData.ImageUrl} alt="preview" className="mt-2 h-24 w-24 object-cover rounded" />
+                                )}
+                            </div>
                             <input name="TimeLimitSeconds" value={formData.TimeLimitSeconds} onChange={handleChange} placeholder="Time Limit Seconds" type="number" className="w-full p-2 border rounded" />
                             <input name="MaxDistanceMeters" value={formData.MaxDistanceMeters} onChange={handleChange} placeholder="Max Distance Meters" type="number" className="w-full p-2 border rounded" />
                         </div>

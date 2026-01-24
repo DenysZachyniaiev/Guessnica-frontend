@@ -12,6 +12,12 @@ export default function LoginPage({ setIsLoggedIn }) {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if (localStorage.getItem('jwt')) {
+            navigate('/welcome');
+        }
+    }, [navigate]);
+
     const handleChange = (e) => {
         setFormData({
             ...formData,
