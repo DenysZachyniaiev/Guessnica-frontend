@@ -153,7 +153,7 @@ i18n.use(initReactI18next).init({
           createUser: "Create User",
           createAdmin: "Create Admin",
           user: "User",
-          email: "Email",
+          email: "E-mail",
           displayName: "Display Name",
           role: "Role",
           status: "Status",
@@ -169,7 +169,10 @@ i18n.use(initReactI18next).init({
           confirmDelete: "Are you sure you want to delete this user? This action cannot be undone!",
           failedToBlock: "Failed to block user",
           failedToUnblock: "Failed to unblock user",
-          failedToDelete: "Failed to delete user"
+          loadingUsers: "Loading users...",
+          createdAt: "Created",
+          lastLogin: "Last Login",
+          fetchDataFailed: "Failed to fetch users",
         },
         leaderboard: {
           title: "Leaderboard",
@@ -570,7 +573,7 @@ i18n.use(initReactI18next).init({
           createUser: "Utwórz Użytkownika",
           createAdmin: "Utwórz Admina",
           user: "Użytkownik",
-          email: "Email",
+          email: "E-mail",
           displayName: "Nazwa Wyświetlana",
           role: "Rola",
           status: "Status",
@@ -586,7 +589,10 @@ i18n.use(initReactI18next).init({
           confirmDelete: "Czy na pewno chcesz usunąć tego użytkownika? Ta akcja nie może być cofnięta!",
           failedToBlock: "Nie udało się zablokować użytkownika",
           failedToUnblock: "Nie udało się odblokować użytkownika",
-          failedToDelete: "Nie udało się usunąć użytkownika"
+          loadingUsers: "Ładowanie użytkowników...",
+          createdAt: "Utworzono",
+          lastLogin: "Ostatnie logowanie",
+          fetchDataFailed: "Nie udało się pobrać użytkowników",
         },
         leaderboard: {
           title: "Tabela Wyników",

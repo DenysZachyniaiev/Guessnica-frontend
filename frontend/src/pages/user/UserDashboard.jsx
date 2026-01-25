@@ -57,7 +57,7 @@ export default function UserDashboard() {
                 ]);
             }
         } catch (err) {
-            setError('Failed to fetch users');
+            setError(t('userDashboard.fetchDataFailed'));
         } finally {
             setLoading(false);
         }
@@ -130,7 +130,7 @@ export default function UserDashboard() {
     if (loading) {
         return (
             <div className="min-h-screen bg-sky-50 dark:bg-slate-900 flex items-center justify-center">
-                <div className="text-center text-gray-500">Loading users...</div>
+                <div className="text-center text-gray-500">{t('userDashboard.loadingUsers')}</div>
             </div>
         );
     }
@@ -206,25 +206,25 @@ export default function UserDashboard() {
                                             <thead className="bg-gray-50 dark:bg-slate-800">
                                                 <tr>
                                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                        User
+                                                        {t('userDashboard.user')}
                                                     </th>
                                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                        Email
+                                                        {t('userDashboard.email')}
                                                     </th>
                                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                        Role
+                                                        {t('userDashboard.role')}
                                                     </th>
                                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                        Status
+                                                        {t('userDashboard.status')}
                                                     </th>
                                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                        Created
+                                                        {t('userDashboard.createdAt')}
                                                     </th>
                                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                        Last Login
+                                                        {t('userDashboard.lastLogin')}
                                                     </th>
                                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                                        Actions
+                                                        {t('userDashboard.actions')}
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -263,7 +263,7 @@ export default function UserDashboard() {
                                                                     ? 'bg-green-100 text-green-800' 
                                                                     : 'bg-red-100 text-red-800'
                                                             }`}>
-                                                                {user.isActive ? 'Active' : 'Inactive'}
+                                                                {user.isActive ? t('userDashboard.active') : t('userDashboard.inactive')}
                                                             </span>
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
@@ -280,7 +280,7 @@ export default function UserDashboard() {
                                                                     className="px-2 py-1 text-xs bg-yellow-600 text-white rounded hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                                                     title={user.role === 'Admin' ? 'Cannot block admin users' : 'Block user'}
                                                                 >
-                                                                    Block
+                                                                    {t('userDashboard.block')}
                                                                 </button>
                                                                 <button
                                                                     onClick={() => handleUnblockUser(user.id)}
@@ -288,7 +288,7 @@ export default function UserDashboard() {
                                                                     className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                                                     title={user.role === 'Admin' ? 'Cannot unblock admin users' : 'Unblock user'}
                                                                 >
-                                                                    Unblock
+                                                                    {t('userDashboard.unblock')}
                                                                 </button>
                                                                 <button
                                                                     onClick={() => handleDeleteUser(user.id)}
@@ -296,7 +296,7 @@ export default function UserDashboard() {
                                                                     className="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                                                     title={user.role === 'Admin' ? 'Cannot delete admin users' : 'Delete user'}
                                                                 >
-                                                                    Delete
+                                                                    {t('userDashboard.delete')}
                                                                 </button>
                                                             </div>
                                                         </td>
