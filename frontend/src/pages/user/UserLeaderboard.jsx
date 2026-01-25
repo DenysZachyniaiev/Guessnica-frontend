@@ -54,7 +54,7 @@ export default function UserLeaderboard() {
             });
 
             if (!response.ok) {
-                setError(`Failed to fetch leaderboard (HTTP ${response.status})`);
+                setError(`{t('leaderboard.fetchFailed')} (HTTP ${response.status})`);
                 setLeaderboard([]);
                 return;
             }
@@ -62,7 +62,7 @@ export default function UserLeaderboard() {
             const data = await response.json();
             setLeaderboard(Array.isArray(data) ? data : []);
         } catch {
-            setError('Failed to fetch leaderboard');
+            setError(t('leaderboard.fetchFailed'));
             setLeaderboard([]);
         } finally {
             setLoading(false);
@@ -175,7 +175,7 @@ export default function UserLeaderboard() {
     if (loading) {
         return (
             <div className="min-h-screen bg-sky-50 dark:bg-slate-900 flex items-center justify-center">
-                <div className="text-center text-gray-500">Loading leaderboard...</div>
+                <div className="text-center text-gray-500">{t('leaderboard.loading')}</div>
             </div>
         );
     }
@@ -209,7 +209,7 @@ export default function UserLeaderboard() {
                         <div className="flex flex-col sm:flex-row gap-4">
                             <div className="flex-1">
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Time Range
+                                    {t('leaderboard.timeRange')}
                                 </label>
                                 <select
                                     value={timeRange}

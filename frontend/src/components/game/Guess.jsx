@@ -315,21 +315,12 @@ export default function Guess() {
                                         <svg className={`w-4 h-4 ${darkMode ? 'text-blue-400' : 'text-sky-600'}`} fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                                         </svg>
-                                        <span>LAT {userGuess[0].toFixed(5)}</span>
+                                        <span>{t('game.latitude')} {userGuess[0].toFixed(5)}</span>
                                         <span className={darkMode ? 'text-gray-600' : 'text-gray-400'}>|</span>
-                                        <span>LNG {userGuess[1].toFixed(5)}</span>
+                                        <span>{t('game.longitude')} {userGuess[1].toFixed(5)}</span>
                                     </div>
                                 </div>
                             )}
-                        </div>
-                        <div className={`p-4 text-center transition-colors duration-300 ${
-                            darkMode ? 'bg-gray-800/50 text-gray-300' : 'bg-white text-gray-600'
-                        }`}>
-                            <p className="text-sm font-medium">
-                                {!userGuess && t('game.clickToSelect')}
-                                {userGuess && !result && t('game.locationSelected')}
-                                {result && t('game.answerRecorded')}
-                            </p>
                         </div>
                     </div>
                 </div>

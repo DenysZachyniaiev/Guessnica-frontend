@@ -94,7 +94,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                                 : 'hover:bg-gray-100 text-gray-700 hover:text-gray-900'
                                         }`}
                                     >
-                                        Guess
+                                        {t('nav.guess')}
                                     </Link>
                                     <Link
                                         to="/user-panel"
@@ -104,7 +104,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                                 : 'hover:bg-gray-100 text-gray-700 hover:text-gray-900'
                                         }`}
                                     >
-                                        User Panel
+                                        {t('nav.userPanel')}
                                     </Link>
                                     <Link
                                         to="/leaderboard"
@@ -114,7 +114,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                                 : 'hover:bg-gray-100 text-gray-700 hover:text-gray-900'
                                         }`}
                                     >
-                                        Leaderboard
+                                        {t('nav.leaderboard')}
                                     </Link>
                                 </>
                             ) : (
@@ -126,7 +126,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                             : 'bg-sky-600 hover:bg-sky-500 text-white'
                                     }`}
                                 >
-                                    Sign In
+                                    {t('nav.signIn')}
                                 </Link>
                             )}
 
@@ -145,7 +145,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
-                                    <span>Settings</span>
+                                    <span>{t('nav.settings')}</span>
                                 </button>
                                 <div className={`dropdown-menu absolute right-0 top-full mt-3 ${dropdownVisibilityClass} rounded-2xl w-72 shadow-2xl overflow-hidden z-[10060] transition-colors duration-300 ${
                                     darkMode
@@ -164,7 +164,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                                             </svg>
-                                            <span>General Settings</span>
+                                            <span>{t('nav.generalSettings')}</span>
                                         </Link>
                                     )}
 
@@ -206,9 +206,9 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                     {/* Theme Switcher */}
                                     <div className="px-5 py-4">
                                         <div className="flex items-center justify-between mb-3">
-                                            <span className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Theme</span>
+                                            <span className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t('theme.title')}</span>
                                             <span className={`text-xs px-2.5 py-1 rounded-full ${darkMode ? 'bg-blue-600/20 text-blue-400' : 'bg-sky-100 text-sky-700'}`}>
-                                                {darkMode ? 'Dark' : 'Light'}
+                                                {darkMode ? t('ui.dark') : t('ui.light')}
                                             </span>
                                         </div>
                                         <div className={`relative rounded-full p-1 flex items-center ${darkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
@@ -247,7 +247,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
                                             </svg>
-                                            <span>Customize Theme</span>
+                                            <span>{t('theme.customizeTheme')}</span>
                                         </button>
                                     </div>
 
@@ -259,7 +259,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                             </svg>
-                                            <span>Logout</span>
+                                            <span>{t('nav.logout')}</span>
                                         </button>
                                     )}
                                 </div>
@@ -304,7 +304,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                 darkMode ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-100 text-gray-700'
                             }`}
                         >
-                            Home
+                            {t('nav.home')}
                         </Link>
                         <Link
                             to="/guess"
@@ -312,7 +312,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                 darkMode ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-100 text-gray-700'
                             }`}
                         >
-                            Guess
+                            {t('nav.guess')}
                         </Link>
                         <Link
                             to="/user-panel"
@@ -320,7 +320,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                 darkMode ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-100 text-gray-700'
                             }`}
                         >
-                            User Panel
+                            {t('nav.userPanel')}
                         </Link>
                         <Link
                             to="/leaderboard"
@@ -328,7 +328,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                 darkMode ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-100 text-gray-700'
                             }`}
                         >
-                            Leaderboard
+                            {t('nav.leaderboard')}
                         </Link>
                     </>
                 ) : (
@@ -338,7 +338,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                             darkMode ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-sky-600 hover:bg-sky-500 text-white'
                         }`}
                     >
-                        Sign In
+                        {t('nav.signIn')}
                     </Link>
                 )}
 
@@ -353,7 +353,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    <span>Settings</span>
+                    <span>{t('nav.settings')}</span>
                 </button>
 
                 {isDropdownOpen && (
@@ -368,7 +368,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                                 </svg>
-                                <span>General Settings</span>
+                                <span>{t('nav.generalSettings')}</span>
                             </Link>
                         )}
 
@@ -410,9 +410,9 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                         {/* Theme Switcher */}
                         <div className="px-5 py-4">
                             <div className="flex items-center justify-between mb-3">
-                                <span className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Theme</span>
+                                <span className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t('theme.title')}</span>
                                 <span className={`text-xs px-2.5 py-1 rounded-full ${darkMode ? 'bg-blue-600/20 text-blue-400' : 'bg-sky-100 text-sky-700'}`}>
-                                    {darkMode ? 'Dark' : 'Light'}
+                                    {darkMode ? t('ui.dark') : t('ui.light')}
                                 </span>
                             </div>
                             <div className={`relative rounded-full p-1 flex items-center ${darkMode ? 'bg-gray-900' : 'bg-gray-200'}`}>
@@ -445,7 +445,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
                                 </svg>
-                                <span>Customize Theme</span>
+                                <span>{t('theme.customizeTheme')}</span>
                             </button>
                         </div>
 
@@ -457,7 +457,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                 </svg>
-                                <span>Logout</span>
+                                <span>{t('nav.logout')}</span>
                             </button>
                         )}
                     </div>
