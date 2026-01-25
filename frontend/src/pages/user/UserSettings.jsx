@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function UserSettings() {
     const [settings, setSettings] = useState({
@@ -24,6 +25,7 @@ export default function UserSettings() {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     useEffect(() => {
         fetchUserSettings();
@@ -63,9 +65,9 @@ export default function UserSettings() {
             });
 
             if (response.ok) {
-                setMessage('Settings saved successfully!');
+                setMessage(t('userSettings.settingsSaved'));
             } else {
-                setMessage('Failed to save settings');
+                setMessage(t('userSettings.settingsError'));
             }
         } catch (err) {
             setMessage('Network error. Please try again.');
@@ -113,17 +115,17 @@ export default function UserSettings() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                    User Settings
+                                    {t('userSettings.title')}
                                 </h1>
                                 <p className="text-gray-600 dark:text-gray-400 mt-1">
-                                    Customize your account preferences and privacy settings
+                                    {t('userSettings.subtitle')}
                                 </p>
                             </div>
                             <button
                                 onClick={() => navigate('/user-panel')}
                                 className="text-sky-600 hover:text-sky-500 font-medium"
                             >
-                                Back to User Panel
+                                {t('userSettings.backToPanel')}
                             </button>
                         </div>
                     </div>
@@ -142,13 +144,13 @@ export default function UserSettings() {
                         {/* Notifications */}
                         <div>
                             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                                Notifications
+                                {t('userSettings.notifications')}
                             </h2>
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Email Notifications
+                                            {t('userSettings.emailNotifications')}
                                         </label>
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
                                             Receive email updates about your account
@@ -164,7 +166,7 @@ export default function UserSettings() {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Game Reminders
+                                            {t('userSettings.gameReminders')}
                                         </label>
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
                                             Get reminded to play daily riddles
@@ -180,7 +182,7 @@ export default function UserSettings() {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Weekly Statistics
+                                            {t('userSettings.weeklyStats')}
                                         </label>
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
                                             Receive weekly performance summary
@@ -196,7 +198,7 @@ export default function UserSettings() {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            New Features
+                                            {t('userSettings.newFeatures')}
                                         </label>
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
                                             Be notified about new game features
@@ -215,13 +217,13 @@ export default function UserSettings() {
                         {/* Privacy */}
                         <div>
                             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                                Privacy
+                                {t('userSettings.privacy')}
                             </h2>
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Public Profile
+                                            {t('userSettings.publicProfile')}
                                         </label>
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
                                             Allow others to see your profile
@@ -237,10 +239,10 @@ export default function UserSettings() {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Public Statistics
+                                            {t('userSettings.publicStatistics')}
                                         </label>
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            Show your game statistics publicly
+                                            {t('userSettings.showYourGameStatisticsPublicly')}
                                         </p>
                                     </div>
                                     <input
@@ -253,10 +255,10 @@ export default function UserSettings() {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Friend Requests
+                                            {t('userSettings.friendRequests')}
                                         </label>
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            Allow other users to send friend requests
+                                            {t('userSettings.allowOtherUsersToSendFriendRequests')}
                                         </p>
                                     </div>
                                     <input
@@ -272,16 +274,16 @@ export default function UserSettings() {
                         {/* Game Preferences */}
                         <div>
                             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                                Game Preferences
+                                {t('userSettings.preferences')}
                             </h2>
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Auto-Play Next Riddle
+                                            {t('userSettings.autoPlayNextRiddle')}
                                         </label>
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            Automatically start next riddle after completing one
+                                            {t('userSettings.automaticallyStartNextRiddleAfterCompletingOne')}
                                         </p>
                                     </div>
                                     <input
@@ -294,10 +296,10 @@ export default function UserSettings() {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Distance in Kilometers
+                                            {t('userSettings.distanceInKilometers')}
                                         </label>
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            Show distances in kilometers instead of miles
+                                            {t('userSettings.showDistancesInKilometersInsteadOfMiles')}
                                         </p>
                                     </div>
                                     <input
@@ -310,7 +312,7 @@ export default function UserSettings() {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Show Timer
+                                            {t('userSettings.showTimer')}
                                         </label>
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
                                             Display timer during gameplay
@@ -326,7 +328,7 @@ export default function UserSettings() {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Sound Effects
+                                            {t('userSettings.soundEffects')}
                                         </label>
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
                                             Enable sound effects in the game
@@ -349,7 +351,7 @@ export default function UserSettings() {
                                 disabled={loading}
                                 className="bg-sky-600 text-white px-6 py-2 rounded-lg hover:bg-sky-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
-                                {loading ? 'Saving...' : 'Save Settings'}
+                                {loading ? t('userSettings.saving') : t('userSettings.saveSettings')}
                             </button>
                         </div>
                     </div>

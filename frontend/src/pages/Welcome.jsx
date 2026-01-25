@@ -1,11 +1,13 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import logoImg from '../assets/logo.png';
 
 export default function Welcome() {
     const [darkMode, setDarkMode] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('jwt'));
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     useEffect(() => {
         const isDark = localStorage.getItem('theme') === 'dark';
@@ -59,12 +61,12 @@ export default function Welcome() {
                                 ? 'text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400'
                                 : 'text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-blue-600'
                         }`}>
-                            Welcome to Guessnica
+                            {t('welcome.title')}
                         </h1>
                         <p className={`text-xl md:text-2xl mb-8 transition-colors duration-300 ${
                             darkMode ? 'text-gray-300' : 'text-gray-700'
                         }`}>
-                            Test your geography skills with daily location challenges
+                            {t('welcome.subtitle')}
                         </p>
                         {!isLoggedIn && (
                             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -76,7 +78,7 @@ export default function Welcome() {
                                             : 'bg-sky-600 hover:bg-sky-500 text-white shadow-sky-900/30'
                                     }`}
                                 >
-                                    Sign In
+                                    {t('welcome.signIn')}
                                 </button>
                                 <button
                                     onClick={() => navigate('/register')}
@@ -86,7 +88,7 @@ export default function Welcome() {
                                             : 'border-sky-600 text-sky-700 hover:bg-sky-50'
                                     }`}
                                 >
-                                    Create Account
+                                    {t('welcome.createAccount')}
                                 </button>
                             </div>
                         )}
@@ -101,10 +103,10 @@ export default function Welcome() {
                         }`}>
                             <div className="text-4xl mb-4">🌍</div>
                             <h3 className={`text-xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                                Daily Challenges
+                                {t('welcome.features.dailyChallenges')}
                             </h3>
                             <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                                New location puzzles every day to test your knowledge
+                                {t('welcome.description')}
                             </p>
                         </div>
 
@@ -115,10 +117,10 @@ export default function Welcome() {
                         }`}>
                             <div className="text-4xl mb-4">🏆</div>
                             <h3 className={`text-xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                                Compete & Win
+                                {t('welcome.features.competeGlobally')}
                             </h3>
                             <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                                Climb the leaderboard and become the top guesser
+                                {t('welcome.description')}
                             </p>
                         </div>
 
@@ -129,10 +131,10 @@ export default function Welcome() {
                         }`}>
                             <div className="text-4xl mb-4">📍</div>
                             <h3 className={`text-xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                                Track Progress
+                                {t('welcome.features.trackProgress')}
                             </h3>
                             <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                                Monitor your stats and improve your geography skills
+                                {t('welcome.description')}
                             </p>
                         </div>
                     </div>
