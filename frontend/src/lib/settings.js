@@ -1,4 +1,5 @@
 const SETTINGS_KEY = 'guessnica_admin_settings';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8082';
 
 let cache = {
   timeLimitSeconds: 3600,
@@ -17,7 +18,7 @@ function notify() {
 
 export async function loadSettings() {
   try {
-    const res = await fetch('/admin/settings', { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } });
+    const res = await fetch(`${API_BASE_URL}/admin/settings`, { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } });
     if (res.ok) {
       const data = await res.json();
       cache = { ...cache, ...data };
@@ -44,7 +45,7 @@ export async function saveSettings(newSettings) {
   cache = { ...cache, ...newSettings };
   notify();
   try {
-    const res = await fetch('/admin/settings', {
+    const res = await fetch(`${API_BASE_URL}/admin/settings`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(cache)
