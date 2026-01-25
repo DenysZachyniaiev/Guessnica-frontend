@@ -262,6 +262,28 @@ i18n.use(initReactI18next).init({
           }
         },
         auth: {
+          login_title: "Welcome Back",
+          login_subtitle: "Sign in to your account to continue",
+          email_label: "Email Address",
+          password_label: "Password",
+          remember_me: "Remember me",
+          forgot_password: "Forgot password?",
+          sign_in_btn: "Sign In",
+          signing_in: "Signing in...",
+          or_continue: "Or continue with",
+          facebook_btn: "Continue with Facebook",
+          no_account: "Don't have an account?",
+          sign_up: "Sign up",
+          footer_agree: "By continuing, you agree to our",
+          terms: "Terms of Service",
+          and: "and",
+          privacy: "Privacy Policy",
+          errors: {
+            invalid_server: "Invalid server response",
+            generic_fail: "Authentication failed",
+            no_token: "No token received",
+            conn_refused: "Connection refused"
+          },
           login: {
             welcomeBack: "Welcome Back",
             signInToAccount: "Sign in to your account to continue",
@@ -682,17 +704,39 @@ i18n.use(initReactI18next).init({
           }
         },
         auth: {
+          login_title: "Witaj Ponownie",
+          login_subtitle: "Zaloguj się do swojego konta, aby kontynuować",
+          email_label: "Adres E-mail",
+          password_label: "Hasło",
+          remember_me: "Zapamiętaj mnie",
+          forgot_password: "Zapomniałeś hasła?",
+          sign_in_btn: "Zaloguj się",
+          signing_in: "Logowanie...",
+          or_continue: "Lub kontynuuj z",
+          facebook_btn: "Kontynuuj z Facebook",
+          no_account: "Nie masz konta?",
+          sign_up: "Zarejestruj się",
+          footer_agree: "Kontynuując, zgadzasz się z naszymi",
+          terms: "Warunkami Korzystania",
+          and: "i",
+          privacy: "Polityką Prywatności",
+          errors: {
+            invalid_server: "Nieprawidłowa odpowiedź serwera",
+            generic_fail: "Uwierzytelnienie nieudane",
+            no_token: "Nie otrzymano tokena",
+            conn_refused: "Odrzucono połączenie"
+          },
           login: {
             welcomeBack: "Witaj Ponownie",
             signInToAccount: "Zaloguj się do swojego konta, aby kontynuować",
-            emailAddress: "Adres Email",
+            emailAddress: "Adres E-mail",
             password: "Hasło",
             rememberMe: "Zapamiętaj mnie",
             forgotPassword: "Zapomniałeś hasła?",
             signInButton: "Zaloguj się",
             signingIn: "Logowanie...",
             loginFailed: "Logowanie nieudane. Sprawdź swoje dane.",
-            cannotConnect: "Nie można połączyć z serwerem. Sprawdź, czy API działa."
+            cannotConnect: "Nie można połączyć z serwerem. Sprawdź czy API działa."
           },
           register: {
             createAccount: "Utwórz swoje konto",
