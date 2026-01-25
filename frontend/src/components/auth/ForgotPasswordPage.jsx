@@ -1,9 +1,11 @@
 ﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function ForgotPasswordPage() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8082';
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const [step, setStep] = useState(1); // 1=email, 2=code, 3=new password
     const [loading, setLoading] = useState(false);
@@ -29,10 +31,10 @@ export default function ForgotPasswordPage() {
             });
 
             await res.json();
-            setSuccess('If the email exists, a reset code has been sent.');
+            setSuccess(t('auth.forgotPassword.resetCodeSent'));
             setStep(2);
         } catch {
-            setError('Cannot connect to server.');
+            setError(t('auth.forgotPassword.cannotConnect'));
         } finally {
             setLoading(false);
         }
@@ -56,7 +58,7 @@ export default function ForgotPasswordPage() {
             setResetSessionId(data.resetSessionId);
             setStep(3);
         } catch (err) {
-            setError(err.message || 'Invalid or expired code.');
+            setError(err.message || t('auth.forgotPassword.invalidCode'));
         } finally {
             setLoading(false);
         }
@@ -81,10 +83,10 @@ export default function ForgotPasswordPage() {
             const data = await res.json();
             if (!res.ok) throw new Error(data);
 
-            setSuccess('Password reset successfully. You can now sign in.');
+            setSuccess(t('auth.forgotPassword.passwordResetSuccess'));
             setTimeout(() => navigate('/login'), 2000);
         } catch (err) {
-            setError(err.message || 'Failed to reset password.');
+            setError(err.message || t('auth.forgotPassword.resetFailed'));
         } finally {
             setLoading(false);
         }
@@ -94,7 +96,7 @@ export default function ForgotPasswordPage() {
         <div className="min-h-screen bg-gradient-to-br from-sky-100 to-blue-200 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center px-4">
             <div className="max-w-md w-full bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8">
                 <h1 className="text-3xl font-bold text-center mb-6 text-gray-900 dark:text-white">
-                    Reset Password
+                    {t('auth.forgotPassword.resetPassword')}
                 </h1>
 
                 {error && (
@@ -114,7 +116,7 @@ export default function ForgotPasswordPage() {
                     <form onSubmit={handleRequestReset} className="space-y-4">
                         <input
                             type="email"
-                            placeholder="you@example.com"
+                            placeholder={t('auth.forgotPassword.emailPlaceholder')}
                             value={email}
                             onChange={e => setEmail(e.target.value)}
                             required
@@ -125,7 +127,7 @@ export default function ForgotPasswordPage() {
                             disabled={loading}
                             className="w-full bg-sky-600 text-white py-3 rounded-lg font-medium hover:bg-sky-700"
                         >
-                            Send reset code
+                            {t('auth.forgotPassword.sendResetCode')}
                         </button>
                     </form>
                 )}
@@ -135,7 +137,7 @@ export default function ForgotPasswordPage() {
                     <form onSubmit={handleVerifyCode} className="space-y-4">
                         <input
                             type="text"
-                            placeholder="6-digit code"
+                            placeholder={t('auth.forgotPassword.codePlaceholder')}
                             value={code}
                             onChange={e => setCode(e.target.value)}
                             required
@@ -146,7 +148,7 @@ export default function ForgotPasswordPage() {
                             disabled={loading}
                             className="w-full bg-sky-600 text-white py-3 rounded-lg font-medium hover:bg-sky-700"
                         >
-                            Verify code
+                            {t('auth.forgotPassword.verifyCode')}
                         </button>
                     </form>
                 )}
@@ -156,7 +158,7 @@ export default function ForgotPasswordPage() {
                     <form onSubmit={handleSetNewPassword} className="space-y-4">
                         <input
                             type="password"
-                            placeholder="New password"
+                            placeholder={t('auth.forgotPassword.newPasswordPlaceholder')}
                             value={newPassword}
                             onChange={e => setNewPassword(e.target.value)}
                             required
@@ -167,7 +169,7 @@ export default function ForgotPasswordPage() {
                             disabled={loading}
                             className="w-full bg-sky-600 text-white py-3 rounded-lg font-medium hover:bg-sky-700"
                         >
-                            Set new password
+                            {t('auth.forgotPassword.setNewPassword')}
                         </button>
                     </form>
                 )}
@@ -176,7 +178,7 @@ export default function ForgotPasswordPage() {
                     onClick={() => navigate('/login')}
                     className="mt-6 w-full text-sm text-sky-600 hover:underline"
                 >
-                    Back to login
+                    {t('auth.forgotPassword.backToLogin')}
                 </button>
             </div>
         </div>

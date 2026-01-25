@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function UserDashboard() {
     const [users, setUsers] = useState([]);
@@ -8,6 +9,7 @@ export default function UserDashboard() {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterRole, setFilterRole] = useState('all');
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     useEffect(() => {
         fetchUsers();
@@ -62,7 +64,7 @@ export default function UserDashboard() {
     };
 
     const handleBlockUser = async (userId) => {
-        if (!confirm('Are you sure you want to block this user?')) return;
+        if (!confirm(t('userDashboard.confirmBlock'))) return;
         
         try {
             const token = localStorage.getItem('jwt');
@@ -75,12 +77,12 @@ export default function UserDashboard() {
             });
             fetchUsers();
         } catch (err) {
-            setError('Failed to block user');
+            setError(t('userDashboard.failedToBlock'));
         }
     };
 
     const handleUnblockUser = async (userId) => {
-        if (!confirm('Are you sure you want to unblock this user?')) return;
+        if (!confirm(t('userDashboard.confirmUnblock'))) return;
         
         try {
             const token = localStorage.getItem('jwt');
@@ -93,12 +95,12 @@ export default function UserDashboard() {
             });
             fetchUsers();
         } catch (err) {
-            setError('Failed to unblock user');
+            setError(t('userDashboard.failedToUnblock'));
         }
     };
 
     const handleDeleteUser = async (userId) => {
-        if (!confirm('Are you sure you want to delete this user? This action cannot be undone!')) return;
+        if (!confirm(t('userDashboard.confirmDelete'))) return;
         
         try {
             const token = localStorage.getItem('jwt');
@@ -110,7 +112,7 @@ export default function UserDashboard() {
             });
             fetchUsers();
         } catch (err) {
-            setError('Failed to delete user');
+            setError(t('userDashboard.failedToDelete'));
         }
     };
 
@@ -139,10 +141,10 @@ export default function UserDashboard() {
                 <div className="bg-white dark:bg-slate-800 shadow-lg rounded-lg">
                     <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                            User Management
+                            {t('userDashboard.title')}
                         </h1>
                         <p className="text-gray-600 dark:text-gray-400 mt-1">
-                            Manage user accounts, roles, and permissions
+                            {t('userDashboard.subtitle')}
                         </p>
                     </div>
 
@@ -157,28 +159,28 @@ export default function UserDashboard() {
                             <div className="lg:w-1/3 space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Search Users
+                                        {t('userDashboard.searchUsers')}
                                     </label>
                                     <input
                                         type="text"
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        placeholder="Search by name or email..."
+                                        placeholder={t('userDashboard.searchPlaceholder')}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-sky-500 focus:border-sky-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                                     />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Filter by Role
+                                        {t('userDashboard.filterByRole')}
                                     </label>
                                     <select
                                         value={filterRole}
                                         onChange={(e) => setFilterRole(e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-sky-500 focus:border-sky-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                                     >
-                                        <option value="all">All Roles</option>
-                                        <option value="admin">Admin</option>
-                                        <option value="user">User</option>
+                                        <option value="all">{t('userDashboard.allRoles')}</option>
+                                        <option value="admin">{t('userDashboard.admin')}</option>
+                                        <option value="user">{t('userDashboard.user')}</option>
                                     </select>
                                 </div>
                                 <div className="flex gap-2">
@@ -186,13 +188,13 @@ export default function UserDashboard() {
                                         onClick={() => navigate('/create-user')}
                                         className="flex-1 bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors"
                                     >
-                                        Create User
+                                        {t('userDashboard.createUser')}
                                     </button>
                                     <button
                                         onClick={() => navigate('/create-admin')}
                                         className="flex-1 bg-sky-600 text-white px-3 py-2 rounded-lg hover:bg-sky-700 transition-colors"
                                     >
-                                        Create Admin
+                                        {t('userDashboard.createAdmin')}
                                     </button>
                                 </div>
                             </div>

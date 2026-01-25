@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState({ totalUsers: 0, totalRiddles: 0, activeUsers: 0, totalSubmissions: 0, avgAnswersPerUser: 0, avgRiddlesAnswered: 0 });
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     useEffect(() => {
         fetchStats();
@@ -71,29 +73,29 @@ export default function AdminDashboard() {
 
     return (
         <div className="max-w-7xl mx-auto">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8"> Admin Dashboard </h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">{t('admin.adminDashboard.title')}</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatCard icon={<UsersIcon />} title="Total Users" value={stats.totalUsers} bgColor="bg-sky-500" />
-                <StatCard icon={<CheckIcon />} title="Active Users" value={stats.activeUsers} bgColor="bg-green-500" />
-                <StatCard icon={<PuzzleIcon />} title="Total Riddles" value={stats.totalRiddles} bgColor="bg-purple-500" />
-                <StatCard icon={<DocumentIcon />} title="Total Submissions" value={stats.totalSubmissions} bgColor="bg-yellow-500" />
+                <StatCard icon={<UsersIcon />} title={t('admin.adminDashboard.totalUsers')} value={stats.totalUsers} bgColor="bg-sky-500" />
+                <StatCard icon={<CheckIcon />} title={t('admin.adminDashboard.activeUsers')} value={stats.activeUsers} bgColor="bg-green-500" />
+                <StatCard icon={<PuzzleIcon />} title={t('admin.adminDashboard.totalRiddles')} value={stats.totalRiddles} bgColor="bg-purple-500" />
+                <StatCard icon={<DocumentIcon />} title={t('admin.adminDashboard.totalSubmissions')} value={stats.totalSubmissions} bgColor="bg-yellow-500" />
             </div>
                 <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8">
                 <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
                     <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4"> User Engagement </h2>
                     <div className="space-y-4">
                         <div className="flex justify-between items-center p-3 bg-sky-50 dark:bg-sky-900/20 rounded-lg">
-                            <span className="text-sm text-gray-600 dark:text-gray-400"> Avg answers per user </span>
+                            <span className="text-sm text-gray-600 dark:text-gray-400">{t('admin.adminDashboard.avgAnswersPerUser')}</span>
                             <span className="text-lg font-bold text-gray-900 dark:text-white"> {stats.avgAnswersPerUser.toFixed(1)} </span>
                         </div>
                         <div className="flex justify-between items-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                            <span className="text-sm text-gray-600 dark:text-gray-400"> Avg riddles per user </span>
+                            <span className="text-sm text-gray-600 dark:text-gray-400">{t('admin.adminDashboard.avgRiddlesPerUser')}</span>
                             <span className="text-lg font-bold text-gray-900 dark:text-white"> {stats.avgRiddlesAnswered.toFixed(1)} </span>
                         </div>
                     </div>
                     {stats.avgRiddlesAnswered < stats.totalRiddles * 0.3 && stats.totalRiddles > 0 && (
                         <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                            <p className="text-sm text-yellow-800 dark:text-yellow-200"> 💡 Users are answering less than 30% of riddles. Consider adding more engaging content! </p>
+                            <p className="text-sm text-yellow-800 dark:text-yellow-200">{t('admin.adminDashboard.lowEngagementTip')}</p>
                         </div>
                     )}
                 </div>

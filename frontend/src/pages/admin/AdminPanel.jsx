@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminPanel() {
     const [riddleStats, setRiddleStats] = useState([]);
@@ -10,6 +11,7 @@ export default function AdminPanel() {
     const [activeTab, setActiveTab] = useState('riddles');
 
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8082';
+    const { t } = useTranslation();
 
     useEffect(() => {
         const isDark = document.documentElement.classList.contains('dark');
@@ -164,7 +166,7 @@ export default function AdminPanel() {
                     : 'bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50'
             }`}>
                 <div className={`text-center text-lg font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Loading admin panel...
+                    {t('admin.loading')}
                 </div>
             </div>
         );
@@ -185,7 +187,7 @@ export default function AdminPanel() {
                                 ? 'text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400'
                                 : 'text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-blue-600'
                         }`}>
-                            👑 Admin Panel
+                            {t('admin.title')}
                         </h1>
                         <p className={`text-lg transition-colors duration-300 ${
                             darkMode ? 'text-gray-300' : 'text-gray-700'
@@ -214,7 +216,7 @@ export default function AdminPanel() {
                                 {riddleStats.length}
                             </div>
                             <div className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                Active Riddles
+                                {t('admin.activeRiddles')}
                             </div>
                         </div>
 
@@ -230,7 +232,7 @@ export default function AdminPanel() {
                                 {userStats.length}
                             </div>
                             <div className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                Active Users
+                                {t('admin.activeUsers')}
                             </div>
                         </div>
 
@@ -246,7 +248,7 @@ export default function AdminPanel() {
                                 {submissions.length}
                             </div>
                             <div className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                Total Submissions
+                                {t('admin.totalSubmissions')}
                             </div>
                         </div>
                     </div>
@@ -269,9 +271,9 @@ export default function AdminPanel() {
                                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
                                 }`}
                             >
-                                {tab === 'riddles' && '🎯 Riddle Stats'}
-                                {tab === 'users' && '👥 User Stats'}
-                                {tab === 'submissions' && '📝 Submissions'}
+                                {tab === 'riddles' && t('admin.riddleStatsTab')}
+                                {tab === 'users' && t('admin.userStatsTab')}
+                                {tab === 'submissions' && t('admin.submissionsTab')}
                             </button>
                         ))}
                     </div>

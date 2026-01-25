@@ -171,7 +171,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                                     {/* Language Switcher */}
                                     <div className={`px-5 py-4 ${darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
                                         <div className="flex items-center justify-between mb-3">
-                                            <span className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Language</span>
+                                            <span className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t('ui.language')}</span>
                                             <span className={`text-xs px-2.5 py-1 rounded-full ${darkMode ? 'bg-blue-600/20 text-blue-400' : 'bg-sky-100 text-sky-700'}`}>
                                                 {i18n.language.toUpperCase()}
                                             </span>
@@ -375,7 +375,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
                         {/* Language Switcher */}
                         <div className="px-5 py-4">
                             <div className="flex items-center justify-between mb-3">
-                                <span className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Language</span>
+                                <span className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{t('ui.language')}</span>
                                 <span className={`text-xs px-2.5 py-1 rounded-full ${darkMode ? 'bg-blue-600/20 text-blue-400' : 'bg-sky-100 text-sky-700'}`}>
                                     {i18n.language.toUpperCase()}
                                 </span>

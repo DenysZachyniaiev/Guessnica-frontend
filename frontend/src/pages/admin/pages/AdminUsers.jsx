@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 
 export default function AdminUsers() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [darkMode, setDarkMode] = useState(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const isDark = document.documentElement.classList.contains('dark');
@@ -35,7 +37,7 @@ export default function AdminUsers() {
             <div className="p-12 flex items-center justify-center">
                 <div className="text-center">
                     <div className={`animate-spin rounded-full h-16 w-16 border-b-4 mx-auto mb-4 ${ darkMode ? 'border-blue-500' : 'border-sky-500' }`}></div>
-                    <div className={`text-lg font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}> Loading users... </div>
+                    <div className={`text-lg font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}> {t('adminPages.loadingUsers')} </div>
                 </div>
             </div>
         );
@@ -45,7 +47,7 @@ export default function AdminUsers() {
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className={`text-4xl md:text-5xl font-black mb-2 bg-gradient-to-r ${ darkMode ? 'from-blue-400 to-cyan-400' : 'from-sky-600 to-blue-600' } bg-clip-text text-transparent`}> 👥 Manage Users </h1>
+                    <h1 className={`text-4xl md:text-5xl font-black mb-2 bg-gradient-to-r ${ darkMode ? 'from-blue-400 to-cyan-400' : 'from-sky-600 to-blue-600' } bg-clip-text text-transparent`}> 👥 {t('adminPages.manageUsers')} </h1>
                     <p className="text-red-600">Management actions not available in backend. Showing stats only.</p>
                 </div>
                 {/* Stats */}
@@ -53,7 +55,7 @@ export default function AdminUsers() {
                     <div className={`p-6 rounded-2xl ${ darkMode ? 'bg-gray-800/50 border-2 border-gray-700' : 'bg-white border-2 border-gray-200 shadow-xl' }`}>
                         <div className="text-3xl mb-2">👤</div>
                         <div className={`text-3xl font-black mb-1 bg-gradient-to-r ${ darkMode ? 'from-blue-400 to-cyan-400' : 'from-sky-600 to-blue-600' } bg-clip-text text-transparent`}> {users.length} </div>
-                        <div className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}> Total Users </div>
+                        <div className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}> {t('adminPages.totalUsers')} </div>
                     </div>
                     {/* ... other stats ... */}
                 </div>
@@ -77,7 +79,7 @@ export default function AdminUsers() {
                                     <div className={`text-xl font-black mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}> {u.displayName} </div>
                                     <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}> 📧 {u.email} </div>
                                     {u.lockoutEnd && (
-                                        <div className={`mt-2 inline-flex px-3 py-1 rounded-full text-xs font-bold ${ darkMode ? 'bg-red-900/30 text-red-400 border-2 border-red-600' : 'bg-red-100 text-red-800 border-2 border-red-300' }`}> 🚫 Blocked </div>
+                                        <div className={`mt-2 inline-flex px-3 py-1 rounded-full text-xs font-bold ${ darkMode ? 'bg-red-900/30 text-red-400 border-2 border-red-600' : 'bg-red-100 text-red-800 border-2 border-red-300' }`}> 🚫 {t('adminPages.blocked')} </div>
                                     )}
                                 </div>
                                 {/* No actions */}
@@ -88,8 +90,8 @@ export default function AdminUsers() {
                 {users.length === 0 && (
                     <div className={`text-center py-16 rounded-2xl ${ darkMode ? 'bg-gray-800/50 border-2 border-gray-700' : 'bg-white border-2 border-gray-200' }`}>
                         <div className="text-6xl mb-4">👥</div>
-                        <div className={`text-xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}> No users yet </div>
-                        <div className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}> Users will appear here once they register </div>
+                        <div className={`text-xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}> {t('adminPages.noUsersYet')} </div>
+                        <div className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}> {t('adminPages.usersWillAppear')} </div>
                     </div>
                 )}
             </div>

@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function LoginPage({ setIsLoggedIn }) {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8082';
@@ -11,6 +12,7 @@ export default function LoginPage({ setIsLoggedIn }) {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (localStorage.getItem('jwt')) {
@@ -65,9 +67,9 @@ export default function LoginPage({ setIsLoggedIn }) {
             }
         } catch (err) {
             if (err.name === 'TypeError' && err.message.includes('fetch')) {
-                setError('Cannot connect to server. Please check if the API is running.');
+                setError(t('auth.login.cannotConnect'));
             } else {
-                setError(err.message || 'Login failed. Please check your credentials.');
+                setError(err.message || t('auth.login.loginFailed'));
             }
         } finally {
             setLoading(false);
@@ -116,10 +118,10 @@ export default function LoginPage({ setIsLoggedIn }) {
                 {/* Logo/Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                        Welcome Back
+                        {t('auth.login.welcomeBack')}
                     </h1>
                     <p className="text-gray-600 dark:text-gray-400">
-                        Sign in to your account to continue
+                        {t('auth.login.signInToAccount')}
                     </p>
                 </div>
 
@@ -137,7 +139,7 @@ export default function LoginPage({ setIsLoggedIn }) {
                                 htmlFor="email"
                                 className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                             >
-                                Email Address
+                                {t('auth.login.emailAddress')}
                             </label>
                             <input
                                 type="email"
@@ -160,7 +162,7 @@ export default function LoginPage({ setIsLoggedIn }) {
                                 htmlFor="password"
                                 className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                             >
-                                Password
+                                {t('auth.login.password')}
                             </label>
                             <input
                                 type="password"
@@ -185,7 +187,7 @@ export default function LoginPage({ setIsLoggedIn }) {
                                     className="w-4 h-4 text-sky-600 border-gray-300 rounded focus:ring-sky-500"
                                 />
                                 <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
-                                    Remember me
+                                    {t('auth.login.rememberMe')}
                                 </span>
                             </label>
                             <button
@@ -193,7 +195,7 @@ export default function LoginPage({ setIsLoggedIn }) {
                                 className="text-sm text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300"
                                 onClick={() => navigate('/forgot-password')}
                             >
-                                Forgot password?
+                                {t('auth.login.forgotPassword')}
                             </button>
                         </div>
 
@@ -222,10 +224,10 @@ export default function LoginPage({ setIsLoggedIn }) {
                                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                         />
                                     </svg>
-                                    Signing in...
+                                    {t('auth.login.signingIn')}
                                 </span>
                             ) : (
-                                'Sign In'
+                                <span>{t('auth.login.signInButton')}</span>
                             )}
                         </button>
                     </form>

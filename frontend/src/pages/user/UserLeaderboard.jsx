@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function UserLeaderboard() {
     const [leaderboard, setLeaderboard] = useState([]);
@@ -10,6 +11,7 @@ export default function UserLeaderboard() {
     const [userRank, setUserRank] = useState(null);
 
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
     const daysByRange = {
@@ -125,15 +127,15 @@ export default function UserLeaderboard() {
     const metricLabel = (() => {
         switch (category) {
             case 'score':
-                return 'Total points';
+                return t('leaderboard.totalPoints');
             case 'accuracy':
-                return 'Accuracy';
+                return t('leaderboard.accuracy');
             case 'games':
-                return 'Games played';
+                return t('leaderboard.gamesPlayed');
             case 'averageTime':
-                return 'Average time';
+                return t('leaderboard.averageTime');
             default:
-                return 'Total points';
+                return t('leaderboard.totalPoints');
         }
     })();
 
@@ -155,18 +157,18 @@ export default function UserLeaderboard() {
     const rankSummaryMetric = (() => {
         switch (category) {
             case 'score':
-                return { label: 'Your points', value: userRank?.totalPoints ?? '—' };
+                return { label: t('leaderboard.yourPoints'), value: userRank?.totalPoints ?? '—' };
             case 'accuracy':
-                return { label: 'Your accuracy', value: formatAccuracy(userRank?.accuracy) };
+                return { label: t('leaderboard.yourAccuracy'), value: formatAccuracy(userRank?.accuracy) };
             case 'games':
-                return { label: 'Your games', value: userRank?.gamesPlayed ?? '—' };
+                return { label: t('leaderboard.yourGames'), value: userRank?.gamesPlayed ?? '—' };
             case 'averageTime':
                 return {
-                    label: 'Your avg time',
+                    label: t('leaderboard.yourAvgTime'),
                     value: userRank?.averageTimeSeconds != null ? formatSeconds(userRank.averageTimeSeconds) : '—',
                 };
             default:
-                return { label: 'Your points', value: userRank?.totalPoints ?? '—' };
+                return { label: t('leaderboard.yourPoints'), value: userRank?.totalPoints ?? '—' };
         }
     })();
 
@@ -185,14 +187,14 @@ export default function UserLeaderboard() {
                     <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Leaderboard</h1>
-                                <p className="text-gray-600 dark:text-gray-400 mt-1">Compete with players worldwide</p>
+                                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('leaderboard.title')}</h1>
+                                <p className="text-gray-600 dark:text-gray-400 mt-1">{t('leaderboard.subtitle')}</p>
                             </div>
                             <button
                                 onClick={() => navigate('/user-panel')}
                                 className="text-sky-600 hover:text-sky-500 font-medium"
                             >
-                                Back to User Panel
+                                {t('leaderboard.backToPanel')}
                             </button>
                         </div>
                     </div>
@@ -214,26 +216,26 @@ export default function UserLeaderboard() {
                                     onChange={(e) => setTimeRange(e.target.value)}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-sky-500 focus:border-sky-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                                 >
-                                    <option value="daily">Daily</option>
-                                    <option value="weekly">Weekly</option>
-                                    <option value="monthly">Monthly</option>
-                                    <option value="alltime">All Time</option>
+                                    <option value="daily">{t('leaderboard.daily')}</option>
+                                    <option value="weekly">{t('leaderboard.weekly')}</option>
+                                    <option value="monthly">{t('leaderboard.monthly')}</option>
+                                    <option value="alltime">{t('leaderboard.alltime')}</option>
                                 </select>
                             </div>
 
                             <div className="flex-1">
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Category
+                                    {t('leaderboard.category')}
                                 </label>
                                 <select
                                     value={category}
                                     onChange={(e) => setCategory(e.target.value)}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-sky-500 focus:border-sky-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                                 >
-                                    <option value="score">Total Score</option>
-                                    <option value="accuracy">Accuracy</option>
-                                    <option value="games">Games Played</option>
-                                    <option value="averageTime">Average Time</option>
+                                    <option value="score">{t('leaderboard.totalScore')}</option>
+                                    <option value="accuracy">{t('leaderboard.accuracy')}</option>
+                                    <option value="games">{t('leaderboard.gamesPlayed')}</option>
+                                    <option value="averageTime">{t('leaderboard.averageTime')}</option>
                                 </select>
                             </div>
                         </div>
@@ -242,10 +244,10 @@ export default function UserLeaderboard() {
                     <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                             <div className="text-sm text-gray-700 dark:text-gray-300">
-                                <span className="font-semibold">Your rank:</span> {userRank?.rank ?? '—'}
+                                <span className="font-semibold">{t('leaderboard.yourRank')}</span> {userRank?.rank ?? '—'}
                             </div>
                             <div className="text-sm text-gray-700 dark:text-gray-300">
-                                <span className="font-semibold">Total users:</span> {userRank?.totalUsers ?? '—'}
+                                <span className="font-semibold">{t('leaderboard.totalUsers')}</span> {userRank?.totalUsers ?? '—'}
                             </div>
                             <div className="text-sm text-gray-700 dark:text-gray-300">
                                 <span className="font-semibold">{rankSummaryMetric.label}:</span> {rankSummaryMetric.value}
@@ -255,17 +257,17 @@ export default function UserLeaderboard() {
 
                     <div className="p-6">
                         {leaderboard.length === 0 ? (
-                            <div className="text-center text-gray-500">No results for this time range yet.</div>
+                            <div className="text-center text-gray-500">{t('leaderboard.noResults')}</div>
                         ) : (
                             <div className="overflow-x-auto">
                                 <table className="min-w-full text-sm">
                                     <thead>
                                         <tr className="text-left border-b border-gray-200 dark:border-slate-700">
-                                            <th className="py-2 pr-4">Rank</th>
-                                            <th className="py-2 pr-4">Player</th>
+                                            <th className="py-2 pr-4">{t('leaderboard.rank')}</th>
+                                            <th className="py-2 pr-4">{t('leaderboard.player')}</th>
                                             <th className="py-2 pr-4">{metricLabel}</th>
-                                            <th className="py-2 pr-4">Correct answers</th>
-                                            <th className="py-2 pr-4">Total points</th>
+                                            <th className="py-2 pr-4">{t('leaderboard.correctAnswers')}</th>
+                                            <th className="py-2 pr-4">{t('leaderboard.totalPoints')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>

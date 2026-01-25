@@ -1,11 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-    MapContainer,
-    TileLayer,
-    Marker,
-    useMapEvents,
-    Circle,
-} from "react-leaflet";
+import React, { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Circle } from 'react-leaflet';
+import { useTranslation } from 'react-i18next';
 import { Icon } from "leaflet";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
@@ -52,6 +47,7 @@ export default function Guess() {
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const isDark = localStorage.getItem('theme') === 'dark' || document.documentElement.classList.contains('dark');
@@ -155,7 +151,7 @@ export default function Guess() {
                         darkMode ? 'border-blue-400' : 'border-sky-600'
                     }`}></div>
                     <p className={`text-lg font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Loading challenge...
+                        {t('game.loadingGame')}
                     </p>
                 </div>
             </div>
@@ -232,10 +228,10 @@ export default function Guess() {
                             ? 'text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400'
                             : 'text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-blue-600'
                     }`}>
-                        Daily Challenge
+                        {t('game.dailyChallenge')}
                     </h1>
                     <p className={`text-lg ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Click on the map to guess the location
+                        {t('game.clickToGuess')}
                     </p>
                 </div>
 
@@ -262,7 +258,7 @@ export default function Guess() {
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                                 </svg>
-                                Click to enlarge
+                                {t('game.clickToEnlarge')}
                             </p>
                         </div>
                     </div>
@@ -330,9 +326,9 @@ export default function Guess() {
                             darkMode ? 'bg-gray-800/50 text-gray-300' : 'bg-white text-gray-600'
                         }`}>
                             <p className="text-sm font-medium">
-                                {!userGuess && "Click on the map to select a location"}
-                                {userGuess && !result && "Location selected - submit your guess below"}
-                                {result && "Your answer has been recorded"}
+                                {!userGuess && t('game.clickToSelect')}
+                                {userGuess && !result && t('game.locationSelected')}
+                                {result && t('game.answerRecorded')}
                             </p>
                         </div>
                     </div>
@@ -351,9 +347,9 @@ export default function Guess() {
                             } text-white hover:scale-[1.02] active:scale-[0.98]`
                     }`}
                 >
-                    {submitting && "Submitting..."}
-                    {!submitting && result && "Answer Recorded"}
-                    {!submitting && !result && (userGuess ? "Submit Guess" : "Select Location First")}
+                    {submitting && t('game.submitting')}
+                    {!submitting && result && t('game.answerRecorded')}
+                    {!submitting && !result && (userGuess ? t('game.submitGuess') : t('game.selectLocationFirst'))}
                 </button>
 
                 {/* Result */}
