@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 const ThemeCustomizer = ({ isOpen, onClose }) => {
     const { t } = useTranslation();
+    const [darkMode, setDarkMode] = useState(false);
     const [themes, setThemes] = useState({
         default: {
             name: 'Default',
@@ -60,6 +61,11 @@ const ThemeCustomizer = ({ isOpen, onClose }) => {
         const savedTheme = localStorage.getItem('selectedTheme') || 'default';
         setSelectedTheme(savedTheme);
         
+        // Detect dark mode
+        const isDark = document.documentElement.classList.contains('dark') || 
+                      localStorage.getItem('theme') === 'dark';
+        setDarkMode(isDark);
+        
         if (savedTheme === 'custom') {
             const savedColors = localStorage.getItem('customColors');
             if (savedColors) {
@@ -78,6 +84,7 @@ const ThemeCustomizer = ({ isOpen, onClose }) => {
     };
 
     const applyCustomTheme = () => {
+        console.log('Applying custom theme with colors:', customColors);
         applyColors(customColors.primary, customColors.background, customColors.surface, customColors.text);
         setSelectedTheme('custom');
         localStorage.setItem('selectedTheme', 'custom');
@@ -87,6 +94,8 @@ const ThemeCustomizer = ({ isOpen, onClose }) => {
     const applyColors = (primary, background, surface, text) => {
         const root = document.documentElement;
         const body = document.body;
+        
+        console.log('Setting CSS variables:', { primary, background, surface, text });
         
         // Set CSS variables
         root.style.setProperty('--color-primary', primary);
@@ -106,6 +115,8 @@ const ThemeCustomizer = ({ isOpen, onClose }) => {
         body.style.display = 'none';
         body.offsetHeight; // Trigger reflow
         body.style.display = '';
+        
+        console.log('Custom theme applied successfully');
     };
 
     const adjustColor = (color, amount) => {
