@@ -55,7 +55,7 @@ export default function AdminUsers() {
                     <div className={`p-6 rounded-2xl ${ darkMode ? 'bg-gray-800/50 border-2 border-gray-700' : 'bg-white border-2 border-gray-200 shadow-xl' }`}>
                         <div className="text-3xl mb-2">👤</div>
                         <div className={`text-3xl font-black mb-1 bg-gradient-to-r ${ darkMode ? 'from-blue-400 to-cyan-400' : 'from-sky-600 to-blue-600' } bg-clip-text text-transparent`}> {users.length} </div>
-                        <div className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}> {t('adminPages.totalUsers')} </div>
+                        <div className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}> {t('adminPages.systemTotalUsers')} </div>
                     </div>
                     {/* ... other stats ... */}
                 </div>
@@ -79,7 +79,7 @@ export default function AdminUsers() {
                                     <div className={`text-xl font-black mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}> {u.displayName} </div>
                                     <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}> 📧 {u.email} </div>
                                     {u.lockoutEnd && (
-                                        <div className={`mt-2 inline-flex px-3 py-1 rounded-full text-xs font-bold ${ darkMode ? 'bg-red-900/30 text-red-400 border-2 border-red-600' : 'bg-red-100 text-red-800 border-2 border-red-300' }`}> 🚫 {t('adminPages.blocked')} </div>
+                                        <div className={`mt-2 inline-flex px-3 py-1 rounded-full text-xs font-bold ${ darkMode ? 'bg-red-900/30 text-red-400 border-2 border-red-600' : 'bg-red-100 text-red-800 border-2 border-red-300' }`}> 🚫 {t('adminPages.blockedUsers')} </div>
                                     )}
                                 </div>
                                 {/* No actions */}

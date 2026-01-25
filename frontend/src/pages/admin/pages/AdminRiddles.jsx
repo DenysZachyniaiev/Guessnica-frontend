@@ -259,7 +259,7 @@ export default function AdminRiddles() {
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white"> {t('adminPages.manageRiddles')} </h1>
-                    <p className="text-gray-600 dark:text-gray-400 mt-2"> {t('adminPages.totalRiddles')} {riddleStats.length} | {t('adminPages.totalSubmissions')} {totalSubmissions} </p>
+                    <p className="text-gray-600 dark:text-gray-400 mt-2"> {t('adminPages.systemTotalRiddles')} {riddleStats.length} | {t('adminPages.systemTotalSubmissions')} {totalSubmissions} </p>
                 </div>
                 <button onClick={() => { setEditingRiddle(null); setShowFormModal(true); }} className="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-lg transition-colors">
                     {t('adminPages.addNewRiddle')}
@@ -271,13 +271,13 @@ export default function AdminRiddles() {
                         <thead className="bg-gray-50 dark:bg-slate-700">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.image')} </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.location')} </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.description')} </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.answers')} </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.avgScore')} </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.avgTime')} </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.avgDistance')} </th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.actions')} </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.riddleLocation')} </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.riddleDescription')} </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.riddleAnswers')} </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.riddleAvgScore')} </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.riddleAvgTime')} </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.riddleAvgDistance')} </th>
+                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.riddleActions')} </th>
                         </tr>
                         </thead>
                         <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
@@ -294,13 +294,13 @@ export default function AdminRiddles() {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white"> {riddle.avgDistanceMeters != null ? `${riddle.avgDistanceMeters.toFixed(0)}m` : 'N/A'} </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                                     <button onClick={() => viewRiddleStats(riddle.riddleId)} className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300">
-                                        {t('adminPages.stats')}
+                                        {t('adminPages.riddleStats')}
                                     </button>
                                     <button onClick={() => handleEdit(riddle)} className="text-sky-600 hover:text-sky-900 dark:text-sky-400 dark:hover:text-sky-300">
-                                        {t('adminPages.edit')}
+                                        {t('adminPages.riddleEdit')}
                                     </button>
                                     <button onClick={() => handleDelete(riddle.riddleId)} className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
-                                        {t('adminPages.delete')}
+                                        {t('adminPages.riddleDelete')}
                                     </button>
                                 </td>
                             </tr>
