@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function RegisterPage() {
     const [formData, setFormData] = useState({
@@ -11,6 +12,13 @@ export default function RegisterPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const { t } = useTranslation();
+
+    useEffect(() => {
+        if (localStorage.getItem('jwt')) {
+            navigate('/welcome');
+        }
+    }, [navigate]);
 
     const handleChange = (e) => {
         setFormData({
@@ -25,13 +33,13 @@ export default function RegisterPage() {
         setError('');
 
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
+            setError(t('auth.register.passwordsNotMatch'));
             setLoading(false);
             return;
         }
 
         if (formData.password.length < 6) {
-            setError('Password must be at least 6 characters');
+            setError(t('auth.register.passwordTooShort'));
             setLoading(false);
             return;
         }
@@ -53,7 +61,7 @@ export default function RegisterPage() {
 
             if (response.ok) {
                 // Registration successful - email confirmation required
-                setError('Registration successful! Please check your email to confirm your account.');
+                setError(t('auth.register.registrationSuccess'));
                 setTimeout(() => {
                     navigate('/login');
                 }, 3000);
@@ -76,7 +84,7 @@ export default function RegisterPage() {
             <div className="max-w-md w-full space-y-8">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-                        Create your account
+                        {t('auth.register.createAccount')}
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
                         Or{' '}
@@ -84,7 +92,7 @@ export default function RegisterPage() {
                             onClick={() => navigate('/login')}
                             className="font-medium text-sky-600 hover:text-sky-500"
                         >
-                            sign in to your existing account
+                            {t('auth.register.signInToExisting')}
                         </button>
                     </p>
                 </div>
@@ -97,7 +105,7 @@ export default function RegisterPage() {
                     <div className="space-y-4">
                         <div>
                             <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Display Name
+                                {t('auth.register.displayName')}
                             </label>
                             <input
                                 id="displayName"
@@ -108,12 +116,12 @@ export default function RegisterPage() {
                                 value={formData.displayName}
                                 onChange={handleChange}
                                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-sky-500 focus:border-sky-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-gray-400"
-                                placeholder="Enter your display name"
+                                placeholder={t('auth.register.displayNamePlaceholder')}
                             />
                         </div>
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Email address
+                                {t('auth.register.emailAddress')}
                             </label>
                             <input
                                 id="email"
@@ -124,12 +132,12 @@ export default function RegisterPage() {
                                 value={formData.email}
                                 onChange={handleChange}
                                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-sky-500 focus:border-sky-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-gray-400"
-                                placeholder="Enter your email"
+                                placeholder={t('auth.register.emailPlaceholder')}
                             />
                         </div>
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Password
+                                {t('auth.register.password')}
                             </label>
                             <input
                                 id="password"
@@ -140,12 +148,12 @@ export default function RegisterPage() {
                                 value={formData.password}
                                 onChange={handleChange}
                                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-sky-500 focus:border-sky-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-gray-400"
-                                placeholder="Create a password"
+                                placeholder={t('auth.register.passwordPlaceholder')}
                             />
                         </div>
                         <div>
                             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Confirm Password
+                                {t('auth.register.confirmPassword')}
                             </label>
                             <input
                                 id="confirmPassword"
@@ -156,7 +164,7 @@ export default function RegisterPage() {
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
                                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-sky-500 focus:border-sky-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-gray-400"
-                                placeholder="Confirm your password"
+                                placeholder={t('auth.register.confirmPasswordPlaceholder')}
                             />
                         </div>
                     </div>
@@ -167,7 +175,7 @@ export default function RegisterPage() {
                             disabled={loading}
                             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
-                            {loading ? 'Creating account...' : 'Create account'}
+                            {loading ? t('auth.register.creating') : t('auth.register.createAccountButton')}
                         </button>
                     </div>
 

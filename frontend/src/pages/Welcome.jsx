@@ -1,10 +1,13 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import logoImg from '../assets/logo.png';
 
 export default function Welcome() {
     const [darkMode, setDarkMode] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('jwt'));
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     useEffect(() => {
         const isDark = localStorage.getItem('theme') === 'dark';
@@ -22,9 +25,16 @@ export default function Welcome() {
             setDarkMode(isDark);
         }, 100);
 
+        // auth status watcher (in case login/logout happens in other tab)
+        const checkAuth = () => setIsLoggedIn(!!localStorage.getItem('jwt'));
+        window.addEventListener('storage', checkAuth);
+        const authInterval = setInterval(checkAuth, 500);
+
         return () => {
             window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('storage', checkAuth);
             clearInterval(interval);
+            clearInterval(authInterval);
         };
     }, []);
 
@@ -51,35 +61,37 @@ export default function Welcome() {
                                 ? 'text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400'
                                 : 'text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-blue-600'
                         }`}>
-                            Welcome to Guessnica
+                            {t('welcome.title')}
                         </h1>
                         <p className={`text-xl md:text-2xl mb-8 transition-colors duration-300 ${
                             darkMode ? 'text-gray-300' : 'text-gray-700'
                         }`}>
-                            Test your geography skills with daily location challenges
+                            {t('welcome.subtitle')}
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                            <button
-                                onClick={() => navigate('/login')}
-                                className={`px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl ${
-                                    darkMode
-                                        ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-900/50'
-                                        : 'bg-sky-600 hover:bg-sky-500 text-white shadow-sky-900/30'
-                                }`}
-                            >
-                                Sign In
-                            </button>
-                            <button
-                                onClick={() => navigate('/register')}
-                                className={`px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 border-2 ${
-                                    darkMode
-                                        ? 'border-blue-500 text-blue-400 hover:bg-blue-500/10'
-                                        : 'border-sky-600 text-sky-700 hover:bg-sky-50'
-                                }`}
-                            >
-                                Create Account
-                            </button>
-                        </div>
+                        {!isLoggedIn && (
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                                <button
+                                    onClick={() => navigate('/login')}
+                                    className={`px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl ${
+                                        darkMode
+                                            ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-900/50'
+                                            : 'bg-sky-600 hover:bg-sky-500 text-white shadow-sky-900/30'
+                                    }`}
+                                >
+                                    {t('welcome.signIn')}
+                                </button>
+                                <button
+                                    onClick={() => navigate('/register')}
+                                    className={`px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 border-2 ${
+                                        darkMode
+                                            ? 'border-blue-500 text-blue-400 hover:bg-blue-500/10'
+                                            : 'border-sky-600 text-sky-700 hover:bg-sky-50'
+                                    }`}
+                                >
+                                    {t('welcome.createAccount')}
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     {/* Features Grid */}
@@ -91,10 +103,10 @@ export default function Welcome() {
                         }`}>
                             <div className="text-4xl mb-4">🌍</div>
                             <h3 className={`text-xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                                Daily Challenges
+                                {t('welcome.features.dailyChallenges')}
                             </h3>
                             <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                                New location puzzles every day to test your knowledge
+                                {t('welcome.description')}
                             </p>
                         </div>
 
@@ -105,10 +117,10 @@ export default function Welcome() {
                         }`}>
                             <div className="text-4xl mb-4">🏆</div>
                             <h3 className={`text-xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                                Compete & Win
+                                {t('welcome.features.competeGlobally')}
                             </h3>
                             <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                                Climb the leaderboard and become the top guesser
+                                {t('welcome.description')}
                             </p>
                         </div>
 
@@ -119,10 +131,10 @@ export default function Welcome() {
                         }`}>
                             <div className="text-4xl mb-4">📍</div>
                             <h3 className={`text-xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                                Track Progress
+                                {t('welcome.features.trackProgress')}
                             </h3>
                             <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-                                Monitor your stats and improve your geography skills
+                                {t('welcome.description')}
                             </p>
                         </div>
                     </div>

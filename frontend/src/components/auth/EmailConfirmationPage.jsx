@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function EmailConfirmationPage() {
     const [status, setStatus] = useState('loading');
     const [message, setMessage] = useState('');
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     useEffect(() => {
         const confirmEmail = async () => {
@@ -14,7 +16,7 @@ export default function EmailConfirmationPage() {
 
             if (!userId || !token) {
                 setStatus('error');
-                setMessage('Invalid confirmation link. Please try again.');
+                setMessage(t('auth.emailConfirmation.invalidLink'));
                 return;
             }
 
@@ -24,13 +26,13 @@ export default function EmailConfirmationPage() {
 
                 if (response.ok) {
                     setStatus('success');
-                    setMessage(data.message || 'Email confirmed successfully!');
+                    setMessage(data.message || t('auth.emailConfirmation.confirmationSuccess'));
                     setTimeout(() => {
                         navigate('/login');
                     }, 3000);
                 } else {
                     setStatus('error');
-                    setMessage(data.message || 'Email confirmation failed.');
+                    setMessage(data.message || t('auth.emailConfirmation.confirmationError'));
                 }
             } catch (err) {
                 setStatus('error');
@@ -63,13 +65,13 @@ export default function EmailConfirmationPage() {
                             </svg>
                         )}
                     </div>
-                    
+
                     <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                        {status === 'loading' && 'Confirming your email...'}
-                        {status === 'success' && 'Email Confirmed!'}
-                        {status === 'error' && 'Confirmation Failed'}
+                        {status === 'loading' && t('auth.emailConfirmation.confirmingEmail')}
+                        {status === 'success' && t('auth.emailConfirmation.emailConfirmed')}
+                        {status === 'error' && t('auth.emailConfirmation.confirmationFailed')}
                     </h2>
-                    
+
                     <p className="text-gray-600 dark:text-gray-400 mb-8">
                         {message}
                     </p>

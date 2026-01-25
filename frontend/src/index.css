@@ -2,3 +2,194 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-primary: #3b82f6;
+  --color-background: #f3f4f6;
+  --color-surface: #ffffff;
+  --color-text: #111827;
+  --color-primary-light: #60a5fa;
+  --color-primary-dark: #2563eb;
+  --color-text-secondary: #6b7280;
+  --color-border: #d1d5db;
+}
+
+.dark {
+  --color-primary: #60a5fa;
+  --color-background: #1f2937;
+  --color-surface: #374151;
+  --color-text: #f9fafb;
+  --color-primary-light: #93c5fd;
+  --color-primary-dark: #3b82f6;
+  --color-text-secondary: #9ca3af;
+  --color-border: #4b5563;
+}
+
+/* Custom theme classes */
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.bg-surface {
+  background-color: var(--color-surface);
+}
+
+.bg-background {
+  background-color: var(--color-background);
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-surface {
+  color: var(--color-surface);
+}
+
+.text-background {
+  color: var(--color-background);
+}
+
+.border-primary {
+  border-color: var(--color-primary);
+}
+
+.border-surface {
+  border-color: var(--color-surface);
+}
+
+.border-background {
+  border-color: var(--color-background);
+}
+
+/* Custom theme overrides */
+.custom-theme {
+  background-color: var(--color-background) !important;
+  color: var(--color-text) !important;
+}
+
+/* Override all common Tailwind classes */
+.custom-theme .bg-white {
+  background-color: var(--color-surface) !important;
+}
+
+.custom-theme .bg-gray-50 {
+  background-color: var(--color-surface) !important;
+}
+
+.custom-theme .bg-gray-100 {
+  background-color: var(--color-surface) !important;
+}
+
+.custom-theme .bg-gray-200 {
+  background-color: var(--color-surface) !important;
+}
+
+.custom-theme .bg-gray-800 {
+  background-color: var(--color-surface) !important;
+}
+
+.custom-theme .bg-gray-900 {
+  background-color: var(--color-surface) !important;
+}
+
+.custom-theme .bg-sky-50 {
+  background-color: var(--color-background) !important;
+}
+
+.custom-theme .bg-sky-100 {
+  background-color: var(--color-background) !important;
+}
+
+.custom-theme .bg-sky-600 {
+  background-color: var(--color-primary) !important;
+}
+
+.custom-theme .bg-blue-600 {
+  background-color: var(--color-primary) !important;
+}
+
+.custom-theme .bg-blue-500 {
+  background-color: var(--color-primary) !important;
+}
+
+.custom-theme .bg-gradient-to-r {
+  background-image: linear-gradient(to right, var(--color-primary), var(--color-primary-light)) !important;
+}
+
+.custom-theme .text-gray-900 {
+  color: var(--color-text) !important;
+}
+
+.custom-theme .text-gray-800 {
+  color: var(--color-text) !important;
+}
+
+.custom-theme .text-gray-700 {
+  color: var(--color-text) !important;
+}
+
+.custom-theme .text-gray-600 {
+  color: var(--color-text-secondary) !important;
+}
+
+.custom-theme .text-gray-500 {
+  color: var(--color-text-secondary) !important;
+}
+
+.custom-theme .text-gray-400 {
+  color: var(--color-text-secondary) !important;
+}
+
+.custom-theme .text-white {
+  color: var(--color-surface) !important;
+}
+
+.custom-theme .text-sky-600 {
+  color: var(--color-primary) !important;
+}
+
+.custom-theme .text-blue-600 {
+  color: var(--color-primary) !important;
+}
+
+.custom-theme .text-blue-400 {
+  color: var(--color-primary-light) !important;
+}
+
+.custom-theme .text-cyan-400 {
+  color: var(--color-primary-light) !important;
+}
+
+.custom-theme .border-gray-200 {
+  border-color: var(--color-border) !important;
+}
+
+.custom-theme .border-gray-300 {
+  border-color: var(--color-border) !important;
+}
+
+.custom-theme .border-gray-700 {
+  border-color: var(--color-border) !important;
+}
+
+.custom-theme .border-sky-600 {
+  border-color: var(--color-primary) !important;
+}
+
+.custom-theme .border-blue-600 {
+  border-color: var(--color-primary) !important;
+}
+
+/* Override dark mode classes when custom theme is active */
+.custom-theme.dark .bg-gray-800 {
+  background-color: var(--color-surface) !important;
+}
+
+.custom-theme.dark .bg-gray-900 {
+  background-color: var(--color-surface) !important;
+}
+
+.custom-theme.dark .text-white {
+  color: var(--color-surface) !important;
+}
+

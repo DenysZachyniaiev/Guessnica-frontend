@@ -1,283 +1,461 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import React, { useState, useEffect, useRef } from 'react';
+import { MapContainer, TileLayer, Marker, Circle, useMapEvents } from 'react-leaflet';
+import { useTranslation } from 'react-i18next';
 import { Icon } from "leaflet";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
-import 'leaflet/dist/leaflet.css';
+import "leaflet/dist/leaflet.css";
+import MarkerIconImg from "./assets/location.png";
 
-import ObrazekIkonki from './assets/location.png';
-import RiddleImage from './assets/riddle-sample.jpg';
+const LEGNICA_CENTER = [51.2070, 16.1550];
 
-const targetPosition = [51.2024305556, 16.2123805556];
-const ikonka = new Icon({ iconUrl: ObrazekIkonki, iconSize: [34, 34], iconAnchor: [17, 34] });
+const LEGNICA_BOUNDS = [
+    [51.14, 16.05],
+    [51.28, 16.30],
+];
 
-function LocationMarker({ setUserGuess, userGuess, setMarkerVisible, markerVisible }) {
+const markerIcon = new Icon({
+    iconUrl: MarkerIconImg,
+    iconSize: [34, 34],
+    iconAnchor: [17, 34],
+});
+
+
+function LocationMarker({ position, onPick, disabled }) {
     useMapEvents({
         click(e) {
-            const { lat, lng } = e.latlng;
-            setUserGuess([lat, lng]);
-            setMarkerVisible(true);
+            if (disabled) return;
+            onPick([e.latlng.lat, e.latlng.lng]);
         },
     });
-    if (!markerVisible) return null;
-    return <Marker position={userGuess} icon={ikonka} />;
+
+    if (!position) return null;
+    return <Marker position={position} icon={markerIcon} />;
 }
 
 export default function Guess() {
-    const [menuOpen, setMenuOpen] = useState(false);
-    const [mapExpanded, setMapExpanded] = useState(false);
-    const [mobileShowMap, setMobileShowMap] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
-    const [openLightbox, setOpenLightbox] = useState(false);
-    const [userGuess, setUserGuess] = useState(targetPosition);
-    const [markerVisible, setMarkerVisible] = useState(false);
-    const [darkMode, setDarkMode] = useState(false);
     const mapRef = useRef(null);
 
+    const [riddle, setRiddle] = useState(null);
+    const [userGuess, setUserGuess] = useState(null);
+    const [result, setResult] = useState(null);
+
+    const [loading, setLoading] = useState(true);
+    const [blocked, setBlocked] = useState(false);
+    const [error, setError] = useState(null);
+
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
+    const [darkMode, setDarkMode] = useState(false);
+    const { t } = useTranslation();
+
     useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth < 1024);
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
+        const isDark = localStorage.getItem('theme') === 'dark' || document.documentElement.classList.contains('dark');
+        setDarkMode(isDark);
+
+        const observer = new MutationObserver(() => {
+            const isDark = document.documentElement.classList.contains('dark');
+            setDarkMode(isDark);
+        });
+
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+
+        return () => observer.disconnect();
     }, []);
 
     useEffect(() => {
-        const isDark = localStorage.getItem('theme') === 'dark';
-        setDarkMode(isDark);
+        const loadDaily = async () => {
+            try {
+                const res = await fetch("/game/daily", {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+                    },
+                });
 
-        const handleStorageChange = () => {
-            const isDark = localStorage.getItem('theme') === 'dark';
-            setDarkMode(isDark);
+                if (res.status === 409) {
+                    setBlocked(true);
+                    return;
+                }
+
+                if (!res.ok) {
+                    throw new Error("Nie udało się pobrać zagadki");
+                }
+
+                const data = await res.json();
+
+                if (data.isAnswered) {
+                    setBlocked(true);
+                } else {
+                    setRiddle(data);
+                }
+            } catch (e) {
+                setError(e.message);
+            } finally {
+                setLoading(false);
+            }
         };
 
-        window.addEventListener('storage', handleStorageChange);
-
-        const interval = setInterval(() => {
-            const isDark = localStorage.getItem('theme') === 'dark';
-            setDarkMode(isDark);
-        }, 100);
-
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-            clearInterval(interval);
-        };
+        loadDaily();
     }, []);
 
     useEffect(() => {
         if (mapRef.current) {
-            const timer = setTimeout(() => {
-                mapRef.current.invalidateSize();
-            }, 500);
-            return () => clearTimeout(timer);
+            setTimeout(() => mapRef.current.invalidateSize(), 300);
         }
-    }, [mapExpanded, mobileShowMap, isMobile]);
+    }, []);
+
+    const submitAnswer = async () => {
+        if (!userGuess || submitting) return;
+
+        setSubmitting(true);
+
+        try {
+            const res = await fetch("/game/answer", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+                },
+                body: JSON.stringify({
+                    latitude: userGuess[0],
+                    longitude: userGuess[1],
+                }),
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.message);
+            }
+
+            const data = await res.json();
+            setResult(data);
+        } catch (e) {
+            alert(e.message);
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${
+                darkMode
+                    ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900'
+                    : 'bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50'
+            }`}>
+                <div className="text-center">
+                    <div className={`w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4 ${
+                        darkMode ? 'border-blue-400' : 'border-sky-600'
+                    }`}></div>
+                    <p className={`text-lg font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {t('game.loadingGame')}
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    if (blocked) {
+        return (
+            <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${
+                darkMode
+                    ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900'
+                    : 'bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50'
+            }`}>
+                <div className={`max-w-md w-full mx-4 p-8 rounded-2xl shadow-xl text-center transition-colors duration-300 ${
+                    darkMode
+                        ? 'bg-gray-800/50 border-2 border-gray-700'
+                        : 'bg-white border-2 border-gray-200'
+                }`}>
+                    <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl ${
+                        darkMode ? 'bg-blue-600/20 text-blue-400' : 'bg-sky-100 text-sky-600'
+                    }`}>
+                        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h2 className={`text-3xl font-black mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        Today's Challenge Complete
+                    </h2>
+                    <p className={`text-lg ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                        You've already solved today's puzzle. Come back tomorrow for a new challenge!
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${
+                darkMode
+                    ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900'
+                    : 'bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50'
+            }`}>
+                <div className="max-w-md w-full mx-4 p-8 rounded-2xl shadow-xl text-center bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800">
+                    <div className="w-20 h-20 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-6">
+                        <svg className="w-12 h-12 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                    <h2 className="text-2xl font-bold mb-3 text-red-600 dark:text-red-400">Error</h2>
+                    <p className="text-lg text-red-600 dark:text-red-400">{error}</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className={`w-full flex flex-col items-center min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'}`}>
-            <Lightbox
-                open={openLightbox}
-                close={() => setOpenLightbox(false)}
-                slides={[{ src: RiddleImage }]}
-            />
+        <div className={`min-h-screen py-8 px-4 transition-colors duration-300 ${
+            darkMode
+                ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900'
+                : 'bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50'
+        }`}>
+            <div className="max-w-7xl mx-auto">
+                <Lightbox
+                    open={lightboxOpen}
+                    close={() => setLightboxOpen(false)}
+                    slides={[{ src: riddle.imageUrl }]}
+                />
 
-            {/* Main Content */}
-            <div className={`w-[95%] max-w-6xl mt-6 min-h-[750px] p-4 md:p-6 flex flex-col items-center mb-10 rounded-xl shadow-2xl transition-colors duration-300 ${
-                darkMode
-                    ? 'bg-gray-800 border-2 border-gray-700'
-                    : 'bg-white border-2 border-gray-200'
-            }`}>
-
-                {/* Header Section */}
-                <div className="w-full mb-6">
-                    <div className={`flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 rounded-lg transition-colors duration-300 ${
+                {/* Header */}
+                <div className="text-center mb-8">
+                    <h1 className={`text-4xl md:text-5xl font-black mb-3 transition-colors duration-300 ${
                         darkMode
-                            ? 'bg-gradient-to-r from-blue-900/50 to-blue-800/50 border border-blue-700/50'
-                            : 'bg-gradient-to-r from-sky-50 to-blue-50 border border-sky-200'
+                            ? 'text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400'
+                            : 'text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-blue-600'
                     }`}>
-                        <div className="flex flex-col gap-1">
-                            <h1 className={`text-2xl md:text-3xl font-black tracking-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                                Daily Challenge
-                            </h1>
-                            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                Guess the location and earn points
+                        {t('game.dailyChallenge')}
+                    </h1>
+                    <p className={`text-lg ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {t('game.clickToGuess')}
+                    </p>
+                </div>
+
+                {/* Riddle Description Card */}
+                <div className={`mb-6 p-6 rounded-2xl shadow-xl transition-colors duration-300 ${
+                    darkMode
+                        ? 'bg-gray-800/50 border-2 border-gray-700'
+                        : 'bg-white border-2 border-gray-200'
+                }`}>
+                    <div className="flex items-start gap-4">
+                        <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${
+                            darkMode ? 'bg-blue-600/20' : 'bg-sky-100'
+                        }`}>
+                            <svg className={`w-6 h-6 ${darkMode ? 'text-blue-400' : 'text-sky-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div className="flex-1">
+                            <h3 className={`text-lg font-bold mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                                Riddle Clue
+                            </h3>
+                            <p className={`text-xl font-medium italic ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                "{riddle.description}"
                             </p>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <div className={`px-4 py-2 rounded-lg ${
-                                darkMode
-                                    ? 'bg-gray-800/50 border border-gray-700'
-                                    : 'bg-white border border-gray-300'
-                            }`}>
-                                <div className={`text-xs font-medium mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                    Next in
+                    </div>
+                </div>
+
+                {/* Main Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    {/* Image */}
+                    <div
+                        onClick={() => setLightboxOpen(true)}
+                        className={`cursor-zoom-in rounded-2xl overflow-hidden shadow-xl transition-all duration-300 hover:scale-[1.02] ${
+                            darkMode
+                                ? 'bg-gray-800/50 border-2 border-gray-700'
+                                : 'bg-white border-2 border-gray-200'
+                        }`}
+                    >
+                        <img
+                            src={riddle.imageUrl}
+                            alt="Challenge"
+                            className="w-full h-[500px] object-cover"
+                        />
+                        <div className={`p-4 text-center transition-colors duration-300 ${
+                            darkMode ? 'bg-gray-800/50 text-gray-300' : 'bg-white text-gray-600'
+                        }`}>
+                            <p className="text-sm font-medium flex items-center justify-center gap-2">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                                </svg>
+                                {t('game.clickToEnlarge')}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Map */}
+                    <div className={`rounded-2xl overflow-hidden shadow-xl transition-colors duration-300 ${
+                        darkMode
+                            ? 'bg-gray-800/50 border-2 border-gray-700'
+                            : 'bg-white border-2 border-gray-200'
+                    }`}>
+                        <div className="relative h-[500px]">
+                            <MapContainer
+                                ref={mapRef}
+                                center={LEGNICA_CENTER}
+                                zoom={13}
+                                maxBounds={LEGNICA_BOUNDS}
+                                maxBoundsViscosity={1}
+                                style={{ height: "100%", width: "100%" }}
+                            >
+                                <TileLayer
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                />
+
+                                <LocationMarker
+                                    position={userGuess}
+                                    onPick={setUserGuess}
+                                    disabled={!!result}
+                                />
+
+                                {result && (
+                                    <Circle
+                                        center={userGuess}
+                                        radius={riddle.maxDistanceMeters}
+                                        pathOptions={{
+                                            color: result.isCorrect ? "#10b981" : "#ef4444",
+                                            fillOpacity: 0.15,
+                                            weight: 3,
+                                        }}
+                                    />
+                                )}
+                            </MapContainer>
+
+                            {userGuess && (
+                                <div className={`absolute bottom-4 left-4 backdrop-blur-sm px-4 py-3 rounded-xl font-mono text-sm shadow-lg transition-colors duration-300 ${
+                                    darkMode
+                                        ? 'bg-gray-900/95 text-white border border-gray-700'
+                                        : 'bg-white/95 text-gray-900 border border-gray-200'
+                                }`}>
+                                    <div className="flex items-center gap-2">
+                                        <svg className={`w-4 h-4 ${darkMode ? 'text-blue-400' : 'text-sky-600'}`} fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                                        </svg>
+                                        <span>LAT {userGuess[0].toFixed(5)}</span>
+                                        <span className={darkMode ? 'text-gray-600' : 'text-gray-400'}>|</span>
+                                        <span>LNG {userGuess[1].toFixed(5)}</span>
+                                    </div>
                                 </div>
-                                <div className={`font-mono text-xl font-bold flex items-center gap-2 ${darkMode ? 'text-green-400' : 'text-sky-600'}`}>
-                                    <span className={`w-2 h-2 rounded-full animate-pulse ${darkMode ? 'bg-green-400' : 'bg-sky-500'}`}></span>
-                                    09:00:00
+                            )}
+                        </div>
+                        <div className={`p-4 text-center transition-colors duration-300 ${
+                            darkMode ? 'bg-gray-800/50 text-gray-300' : 'bg-white text-gray-600'
+                        }`}>
+                            <p className="text-sm font-medium">
+                                {!userGuess && t('game.clickToSelect')}
+                                {userGuess && !result && t('game.locationSelected')}
+                                {result && t('game.answerRecorded')}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                    onClick={submitAnswer}
+                    disabled={!userGuess || submitting || result}
+                    className={`w-full py-5 rounded-2xl text-xl font-black uppercase transition-all duration-300 shadow-xl transform ${
+                        !userGuess || result
+                            ? `${darkMode ? 'bg-gray-700 text-gray-500' : 'bg-gray-300 text-gray-500'} cursor-not-allowed`
+                            : `${darkMode
+                                ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500'
+                                : 'bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500'
+                            } text-white hover:scale-[1.02] active:scale-[0.98]`
+                    }`}
+                >
+                    {submitting && t('game.submitting')}
+                    {!submitting && result && t('game.answerRecorded')}
+                    {!submitting && !result && (userGuess ? t('game.submitGuess') : t('game.selectLocationFirst'))}
+                </button>
+
+                {/* Result */}
+                {result && (
+                    <div className={`mt-6 p-8 rounded-2xl shadow-xl transition-all duration-300 ${
+                        result.isCorrect
+                            ? darkMode
+                                ? 'bg-green-900/30 border-2 border-green-500'
+                                : 'bg-green-50 border-2 border-green-400'
+                            : darkMode
+                                ? 'bg-red-900/30 border-2 border-red-500'
+                                : 'bg-red-50 border-2 border-red-400'
+                    }`}>
+                        <div className="text-center">
+                            <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${
+                                result.isCorrect
+                                    ? darkMode ? 'bg-green-500/20' : 'bg-green-100'
+                                    : darkMode ? 'bg-red-500/20' : 'bg-red-100'
+                            }`}>
+                                {result.isCorrect ? (
+                                    <svg className={`w-12 h-12 ${darkMode ? 'text-green-400' : 'text-green-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                ) : (
+                                    <svg className={`w-12 h-12 ${darkMode ? 'text-red-400' : 'text-red-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                )}
+                            </div>
+                            <h3 className={`text-3xl font-black mb-6 ${
+                                result.isCorrect
+                                    ? darkMode ? 'text-green-400' : 'text-green-700'
+                                    : darkMode ? 'text-red-400' : 'text-red-700'
+                            }`}>
+                                {result.isCorrect ? "Correct!" : "Try Again Tomorrow!"}
+                            </h3>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+                                <div className={`p-6 rounded-xl shadow-lg transition-colors duration-300 ${
+                                    darkMode ? 'bg-gray-800/50 border-2 border-gray-700' : 'bg-white border-2 border-gray-200'
+                                }`}>
+                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 ${
+                                        darkMode ? 'bg-blue-600/20' : 'bg-sky-100'
+                                    }`}>
+                                        <svg className={`w-7 h-7 ${darkMode ? 'text-blue-400' : 'text-sky-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                        </svg>
+                                    </div>
+                                    <div className={`text-sm font-medium mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Points</div>
+                                    <div className={`text-3xl font-black ${darkMode ? 'text-white' : 'text-gray-900'}`}>{result.points}</div>
+                                </div>
+
+                                <div className={`p-6 rounded-xl shadow-lg transition-colors duration-300 ${
+                                    darkMode ? 'bg-gray-800/50 border-2 border-gray-700' : 'bg-white border-2 border-gray-200'
+                                }`}>
+                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 ${
+                                        darkMode ? 'bg-blue-600/20' : 'bg-sky-100'
+                                    }`}>
+                                        <svg className={`w-7 h-7 ${darkMode ? 'text-blue-400' : 'text-sky-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                    </div>
+                                    <div className={`text-sm font-medium mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Distance</div>
+                                    <div className={`text-3xl font-black ${darkMode ? 'text-white' : 'text-gray-900'}`}>{Math.round(result.distanceMeters)}m</div>
+                                </div>
+
+                                <div className={`p-6 rounded-xl shadow-lg transition-colors duration-300 ${
+                                    darkMode ? 'bg-gray-800/50 border-2 border-gray-700' : 'bg-white border-2 border-gray-200'
+                                }`}>
+                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 ${
+                                        darkMode ? 'bg-blue-600/20' : 'bg-sky-100'
+                                    }`}>
+                                        <svg className={`w-7 h-7 ${darkMode ? 'text-blue-400' : 'text-sky-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div className={`text-sm font-medium mb-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Time</div>
+                                    <div className={`text-3xl font-black ${darkMode ? 'text-white' : 'text-gray-900'}`}>{result.timeSeconds}s</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                {/* RESPONSIVE MENU SECTION */}
-                <div className="w-full mb-6 flex flex-col lg:flex-row items-start gap-0 relative">
-                    <button
-                        onClick={() => setMenuOpen(!menuOpen)}
-                        className={`z-[60] px-6 py-2 border-3 rounded-lg font-black transition-all duration-300 uppercase text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 ${
-                            menuOpen
-                                ? darkMode
-                                    ? 'bg-yellow-500 text-black border-yellow-600'
-                                    : 'bg-yellow-400 text-black border-yellow-500'
-                                : darkMode
-                                    ? 'bg-gray-700 text-white border-gray-600 hover:bg-yellow-500 hover:text-black'
-                                    : 'bg-white text-black border-gray-300 hover:bg-yellow-400'
-                        }`}
-                    >
-                        MENU
-                    </button>
-
-                    {/* Desktop Horizontal Menu */}
-                    <div className={`
-                        hidden lg:flex flex-row items-center rounded-r-lg border-3 z-50 transition-all duration-300 overflow-hidden shadow-lg
-                        ${menuOpen ? 'max-w-xl opacity-100' : 'max-w-0 opacity-0 pointer-events-none'}
-                        ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}
-                    `}>
-                        <div className="flex flex-row whitespace-nowrap py-1">
-                            <button className={`px-4 py-1 border-r-2 font-bold text-xs uppercase italic transition-colors ${
-                                darkMode
-                                    ? 'hover:bg-gray-600 border-gray-600 text-gray-200'
-                                    : 'hover:bg-gray-100 border-gray-200 text-black'
-                            }`}>Zagadka 1</button>
-                            <button className={`px-4 py-1 border-r-2 font-bold text-xs uppercase italic transition-colors ${
-                                darkMode
-                                    ? 'hover:bg-gray-600 border-gray-600 text-gray-200'
-                                    : 'hover:bg-gray-100 border-gray-200 text-black'
-                            }`}>Zagadka 2</button>
-                            <button className={`px-4 py-1 font-bold text-xs uppercase italic transition-colors ${
-                                darkMode
-                                    ? 'hover:bg-gray-600 text-gray-200'
-                                    : 'hover:bg-gray-100 text-black'
-                            }`}>Zagadka 3</button>
-                        </div>
-                    </div>
-
-                    {/* Mobile Vertical Dropdown */}
-                    {menuOpen && (
-                        <div className={`lg:hidden absolute top-full left-0 mt-2 w-48 rounded-lg border-2 z-[2000] shadow-xl overflow-hidden ${
-                            darkMode
-                                ? 'bg-gray-700 border-gray-600'
-                                : 'bg-white border-gray-200'
-                        }`}>
-                            <button className={`w-full text-left p-3 border-b-2 font-bold uppercase text-xs italic transition-colors ${
-                                darkMode
-                                    ? 'border-gray-600 hover:bg-gray-600 text-gray-200'
-                                    : 'border-gray-200 hover:bg-gray-50 text-black'
-                            }`}>Zagadka 1</button>
-                            <button className={`w-full text-left p-3 border-b-2 font-bold uppercase text-xs italic transition-colors ${
-                                darkMode
-                                    ? 'border-gray-600 hover:bg-gray-600 text-gray-200'
-                                    : 'border-gray-200 hover:bg-gray-50 text-black'
-                            }`}>Zagadka 2</button>
-                            <button className={`w-full text-left p-3 font-bold uppercase text-xs italic transition-colors ${
-                                darkMode
-                                    ? 'hover:bg-gray-600 text-gray-200'
-                                    : 'hover:bg-gray-50 text-black'
-                            }`}>Zagadka 3</button>
-                        </div>
-                    )}
-                </div>
-
-                {/* THE CHALLENGE CONTAINER */}
-                <div className="w-full flex flex-col lg:flex-row gap-4 h-auto lg:h-[500px] mb-8">
-                    <div
-                        onClick={() => setOpenLightbox(true)}
-                        className={`
-                            relative rounded-xl overflow-hidden transition-all duration-500 cursor-zoom-in group shadow-xl hover:shadow-2xl
-                            ${mapExpanded ? 'lg:flex-[1.2]' : 'lg:flex-[2.5]'} 
-                            w-full aspect-[4/3] lg:aspect-auto lg:h-full
-                            ${darkMode ? 'border-2 border-gray-700 bg-gray-900' : 'border-2 border-gray-200 bg-black'}
-                        `}
-                    >
-                        <img
-                            src={RiddleImage}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                            alt="Guess this location"
-                        />
-                        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-                    </div>
-
-                    <div className={`
-                        relative flex flex-col transition-all duration-500 rounded-xl shadow-xl
-                        ${mapExpanded ? 'lg:flex-[1.2]' : 'lg:flex-[1]'} 
-                        ${mobileShowMap ? 'h-[350px]' : 'h-[60px] lg:h-full'}
-                        w-full lg:max-w-[600px]
-                        ${darkMode ? 'bg-gray-700 border-2 border-gray-600' : 'bg-white border-2 border-gray-200'}
-                    `}>
-                        <div className={`w-full h-12 border-b-2 flex items-center justify-between px-4 flex-shrink-0 transition-colors duration-300 ${
-                            darkMode
-                                ? 'bg-gray-800 border-gray-600'
-                                : 'bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200'
-                        }`}>
-                            <span className={`font-black text-sm uppercase ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>Minimap</span>
-                            <button
-                                onClick={() => isMobile ? setMobileShowMap(!mobileShowMap) : setMapExpanded(!mapExpanded)}
-                                className={`border-2 px-3 py-1 text-xs font-black rounded-lg uppercase transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md ${
-                                    darkMode
-                                        ? 'bg-yellow-500 hover:bg-yellow-400 border-yellow-600 text-black'
-                                        : 'bg-yellow-400 hover:bg-yellow-500 border-yellow-500 text-black'
-                                }`}
-                            >
-                                {isMobile ? (mobileShowMap ? "Hide" : "Show") : (mapExpanded ? "Shrink" : "Expand")}
-                            </button>
-                        </div>
-
-                        <div className={`
-                            relative flex-grow w-full overflow-hidden transition-all duration-500 rounded-b-xl
-                            ${isMobile && !mobileShowMap ? 'opacity-0 invisible' : 'opacity-100 visible'}
-                        `}>
-                            <MapContainer
-                                center={targetPosition}
-                                zoom={14}
-                                style={{ height: '100%', width: '100%' }}
-                                ref={mapRef}
-                            >
-                                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                                <LocationMarker
-                                    setUserGuess={setUserGuess}
-                                    userGuess={userGuess}
-                                    setMarkerVisible={setMarkerVisible}
-                                    markerVisible={markerVisible}
-                                />
-                            </MapContainer>
-
-                            {markerVisible && (
-                                <div className={`absolute bottom-2 left-2 text-[10px] p-2 font-mono z-[1000] pointer-events-none rounded-lg shadow-lg backdrop-blur-sm ${
-                                    darkMode
-                                        ? 'bg-gray-900/90 text-green-400 border border-green-500/30'
-                                        : 'bg-black/80 text-white border border-white/20'
-                                }`}>
-                                    LAT: {userGuess[0].toFixed(6)} | LNG: {userGuess[1].toFixed(6)}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                <button
-                    disabled={!markerVisible}
-                    className={`w-full max-w-md py-5 border-3 rounded-xl font-black text-2xl uppercase mt-auto transition-all duration-300 transform ${
-                        !markerVisible
-                            ? darkMode
-                                ? 'bg-gray-600 cursor-not-allowed opacity-50 text-gray-400 border-gray-700'
-                                : 'bg-gray-400 cursor-not-allowed opacity-50 text-white border-gray-500'
-                            : darkMode
-                                ? 'bg-blue-600 text-white border-blue-700 shadow-[6px_6px_0px_0px_rgba(30,58,138,1)] hover:bg-blue-500 active:shadow-none active:translate-x-[6px] active:translate-y-[6px]'
-                                : 'bg-sky-500 text-white border-sky-600 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:bg-sky-400 active:shadow-none active:translate-x-[6px] active:translate-y-[6px]'
-                    }`}
-                >
-                    {markerVisible ? "Confirm Guess" : "Select location on map"}
-                </button>
+                )}
             </div>
         </div>
     );

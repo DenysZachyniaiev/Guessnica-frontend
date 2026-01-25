@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminUserCreator() {
     const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ export default function AdminUserCreator() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const handleChange = (e) => {
         setFormData({
@@ -28,19 +30,19 @@ export default function AdminUserCreator() {
         setSuccess('');
 
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
+            setError(t('auth.register.passwordsNotMatch'));
             setLoading(false);
             return;
         }
 
         if (formData.password.length < 6) {
-            setError('Password must be at least 6 characters');
+            setError(t('auth.register.passwordTooShort'));
             setLoading(false);
             return;
         }
 
         if (!formData.email.includes('@')) {
-            setError('Please use a valid email address');
+            setError(t('auth.register.emailValid'));
             setLoading(false);
             return;
         }
@@ -62,15 +64,15 @@ export default function AdminUserCreator() {
             const data = await response.json();
 
             if (response.ok) {
-                setSuccess('Admin user created successfully! You can now log in.');
+                setSuccess(t('auth.adminCreator.adminCreatedSuccess'));
                 setTimeout(() => {
                     navigate('/login');
                 }, 2000);
             } else {
-                setError(data.message || 'Failed to create admin user');
+                setError(data.message || t('auth.adminCreator.failedToCreate'));
             }
         } catch (err) {
-            setError('Network error. Please try again.');
+            setError(t('auth.adminCreator.networkError'));
         } finally {
             setLoading(false);
         }
@@ -82,10 +84,10 @@ export default function AdminUserCreator() {
                 <div className="bg-white dark:bg-slate-800 shadow-xl rounded-lg p-8">
                     <div className="text-center">
                         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                            Create Admin User
+                            {t('auth.adminCreator.createAdminUser')}
                         </h1>
                         <p className="text-gray-600 dark:text-gray-400 mb-8">
-                            Create a new administrator account with full system access
+                            {t('auth.adminCreator.createAdminSubtitle')}
                         </p>
                     </div>
 
@@ -105,7 +107,7 @@ export default function AdminUserCreator() {
                         <div className="space-y-4">
                             <div>
                                 <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Display Name
+                                    {t('auth.adminCreator.displayName')}
                                 </label>
                                 <input
                                     id="displayName"
@@ -116,12 +118,12 @@ export default function AdminUserCreator() {
                                     value={formData.displayName}
                                     onChange={handleChange}
                                     className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-sky-500 focus:border-sky-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-gray-400"
-                                    placeholder="Enter admin display name"
+                                    placeholder={t('auth.adminCreator.displayNamePlaceholder')}
                                 />
                             </div>
                             <div>
                                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Email Address
+                                    {t('auth.adminCreator.emailAddress')}
                                 </label>
                                 <input
                                     id="email"
@@ -132,12 +134,12 @@ export default function AdminUserCreator() {
                                     value={formData.email}
                                     onChange={handleChange}
                                     className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-sky-500 focus:border-sky-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-gray-400"
-                                    placeholder="admin@example.com"
+                                    placeholder={t('auth.adminCreator.emailPlaceholder')}
                                 />
                             </div>
                             <div>
                                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Password
+                                    {t('auth.adminCreator.password')}
                                 </label>
                                 <input
                                     id="password"
@@ -148,12 +150,12 @@ export default function AdminUserCreator() {
                                     value={formData.password}
                                     onChange={handleChange}
                                     className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-sky-500 focus:border-sky-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-gray-400"
-                                    placeholder="Enter secure password"
+                                    placeholder={t('auth.adminCreator.passwordPlaceholder')}
                                 />
                             </div>
                             <div>
                                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Confirm Password
+                                    {t('auth.adminCreator.confirmPassword')}
                                 </label>
                                 <input
                                     id="confirmPassword"
@@ -164,7 +166,7 @@ export default function AdminUserCreator() {
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
                                     className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-sky-500 focus:border-sky-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-gray-400"
-                                    placeholder="Confirm password"
+                                    placeholder={t('auth.adminCreator.confirmPasswordPlaceholder')}
                                 />
                             </div>
                         </div>
@@ -191,7 +193,7 @@ export default function AdminUserCreator() {
                                 disabled={loading}
                                 className="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
-                                {loading ? 'Creating Admin User...' : 'Create Admin User'}
+                                {loading ? t('auth.adminCreator.creating') : t('auth.adminCreator.createAdminButton')} User
                             </button>
                         </div>
 

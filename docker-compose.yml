@@ -1,6 +1,3 @@
-networks: 
-  guessnica: 
-    external: true
 services:
   frontend:
     build:
@@ -9,9 +6,6 @@ services:
     ports:
       - "5173:80"
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - "host.docker.internal:host-gateway" # Crucial for Linux/Docker connection
     environment:
       - NODE_ENV=production
-      - VITE_API_URL=http://localhost:8082
-    networks:
-      - guessnica
