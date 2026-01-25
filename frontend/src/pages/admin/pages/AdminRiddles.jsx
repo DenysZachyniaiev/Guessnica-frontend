@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 
 export default function AdminRiddles() {
-    const { t } = useTranslation();
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8082';
     const [riddleStats, setRiddleStats] = useState([]);
     const [submissions, setSubmissions] = useState([]);
     const [locations, setLocations] = useState([]);
@@ -72,9 +69,9 @@ export default function AdminRiddles() {
     const fetchData = async () => {
         try {
             const [statsRes, submissionsRes, locationsRes] = await Promise.all([
-                fetch(`${API_BASE_URL}/admin/riddles/stats`, { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } }),
-                fetch(`${API_BASE_URL}/admin/submissions`, { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } }),
-                fetch(`${API_BASE_URL}/locations`, { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } })
+                fetch('/admin/riddles/stats', { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } }),
+                fetch('/admin/submissions', { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } }),
+                fetch('/locations', { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } })
             ]);
             const statsData = await statsRes.json();
             const submissionsData = await submissionsRes.json();
@@ -123,12 +120,12 @@ export default function AdminRiddles() {
 
     const validateForm = () => {
         const err = {};
-        if (!formData.ShortDescription || String(formData.ShortDescription).trim().length < 3) err.ShortDescription = t('adminPages.shortDescriptionRequired');
-        if (!formData.Description || String(formData.Description).trim().length < 5) err.Description = t('adminPages.descriptionRequired');
+        if (!formData.ShortDescription || String(formData.ShortDescription).trim().length < 3) err.ShortDescription = 'Short description is required';
+        if (!formData.Description || String(formData.Description).trim().length < 5) err.Description = 'Full description is required';
         const answers = String(formData.Answers || '').split(',').map(a => a.trim()).filter(Boolean);
-        if (answers.length === 0) err.Answers = t('adminPages.atLeastOneAnswerRequired');
+        if (answers.length === 0) err.Answers = 'At least one answer is required';
         const basePoints = Number(formData.BasePoints);
-        if (isNaN(basePoints) || basePoints < 0) err.BasePoints = t('adminPages.basePointsNonNegative');
+        if (isNaN(basePoints) || basePoints < 0) err.BasePoints = 'Base points must be a non-negative number';
         const timeLimit = Number(formData.TimeLimitSeconds);
         if (isNaN(timeLimit) || timeLimit <= 0) err.TimeLimitSeconds = 'Time limit must be greater than 0 seconds';
         const maxDist = Number(formData.MaxDistanceMeters);
@@ -146,7 +143,7 @@ export default function AdminRiddles() {
     const handleSubmit = async () => {
         if (!validateForm()) return;
         setSaving(true);
-        const url = editingRiddle ? `${API_BASE_URL}/riddles/${editingRiddle.id}` : `${API_BASE_URL}/riddles`;
+        const url = editingRiddle ? `/riddles/${editingRiddle.id}` : '/riddles';
         const method = editingRiddle ? 'PUT' : 'POST';
         try {
             // If admin requested to create a new location inline, create it first
@@ -158,7 +155,7 @@ export default function AdminRiddles() {
                     locFd.append('ShortDescription', locationForm.ShortDescription || '');
                     if (locationForm.ImageFile) locFd.append('Image', locationForm.ImageFile);
 
-                    const locRes = await fetch(`${API_BASE_URL}/locations`, {
+                    const locRes = await fetch('/locations', {
                         method: 'POST',
                         headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` },
                         body: locFd
@@ -237,7 +234,7 @@ export default function AdminRiddles() {
     const handleDelete = async (id) => {
         if (!confirm('Are you sure you want to delete this riddle?')) return;
         try {
-            await fetch(`${API_BASE_URL}/riddles/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } });
+            await fetch(`/riddles/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } });
             fetchData();
         } catch (error) {
             console.error('Failed to delete riddle:', error);
@@ -258,11 +255,11 @@ export default function AdminRiddles() {
         <div className="max-w-7xl mx-auto">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white"> {t('adminPages.manageRiddles')} </h1>
-                    <p className="text-gray-600 dark:text-gray-400 mt-2"> {t('adminPages.totalRiddles')} {riddleStats.length} | {t('adminPages.totalSubmissions')} {totalSubmissions} </p>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white"> Manage Riddles </h1>
+                    <p className="text-gray-600 dark:text-gray-400 mt-2"> Total riddles: {riddleStats.length} | Total submissions: {totalSubmissions} </p>
                 </div>
                 <button onClick={() => { setEditingRiddle(null); setShowFormModal(true); }} className="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-lg transition-colors">
-                    {t('adminPages.addNewRiddle')}
+                    Add New Riddle
                 </button>
             </div>
             <div className="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
@@ -270,14 +267,14 @@ export default function AdminRiddles() {
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
                         <thead className="bg-gray-50 dark:bg-slate-700">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.image')} </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.location')} </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.description')} </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.answers')} </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.avgScore')} </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.avgTime')} </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.avgDistance')} </th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {t('adminPages.actions')} </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> Image </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> Location </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> Description </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> Answers </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> Avg Score </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> Avg Time </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> Avg Distance </th>
+                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> Actions </th>
                         </tr>
                         </thead>
                         <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
@@ -294,13 +291,13 @@ export default function AdminRiddles() {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white"> {riddle.avgDistanceMeters != null ? `${riddle.avgDistanceMeters.toFixed(0)}m` : 'N/A'} </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                                     <button onClick={() => viewRiddleStats(riddle.riddleId)} className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300">
-                                        {t('adminPages.stats')}
+                                        Stats
                                     </button>
                                     <button onClick={() => handleEdit(riddle)} className="text-sky-600 hover:text-sky-900 dark:text-sky-400 dark:hover:text-sky-300">
-                                        {t('adminPages.edit')}
+                                        Edit
                                     </button>
                                     <button onClick={() => handleDelete(riddle.riddleId)} className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
-                                        {t('adminPages.delete')}
+                                        Delete
                                     </button>
                                 </td>
                             </tr>

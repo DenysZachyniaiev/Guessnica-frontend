@@ -11,8 +11,6 @@ export default function AdminLocations() {
         ShortDescription: ''
     });
     const [imageFile, setImageFile] = useState(null);
-    const [errors, setErrors] = useState({});
-    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         fetchLocations();
@@ -57,16 +55,6 @@ export default function AdminLocations() {
     };
 
     const handleSubmit = async () => {
-        // validate
-        const err = {};
-        const lat = Number(formData.Latitude);
-        const lon = Number(formData.Longitude);
-        if (isNaN(lat) || lat < -90 || lat > 90) err.Latitude = 'Latitude must be between -90 and 90';
-        if (isNaN(lon) || lon < -180 || lon > 180) err.Longitude = 'Longitude must be between -180 and 180';
-        if (!formData.ShortDescription || String(formData.ShortDescription).trim().length < 3) err.ShortDescription = 'Short description is required';
-        setErrors(err);
-        if (Object.keys(err).length > 0) return;
-        setSaving(true);
         const data = new FormData();
         data.append('Latitude', formData.Latitude);
         data.append('Longitude', formData.Longitude);
@@ -94,7 +82,6 @@ export default function AdminLocations() {
         } catch (error) {
             console.error('Error saving location:', error);
         }
-        setSaving(false);
     };
 
     const handleDelete = async (id) => {
@@ -171,19 +158,16 @@ export default function AdminLocations() {
                         <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4"> {editingLocation ? 'Edit Location' : 'Add New Location'} </h3>
                         <div className="space-y-4">
                             <input name="Latitude" value={formData.Latitude} onChange={handleChange} placeholder="Latitude" type="number" className="w-full p-2 border rounded" />
-                            {errors.Latitude && <div className="text-red-600 text-sm">{errors.Latitude}</div>}
                             <input name="Longitude" value={formData.Longitude} onChange={handleChange} placeholder="Longitude" type="number" className="w-full p-2 border rounded" />
-                            {errors.Longitude && <div className="text-red-600 text-sm">{errors.Longitude}</div>}
                             <input name="ShortDescription" value={formData.ShortDescription} onChange={handleChange} placeholder="Short Description" className="w-full p-2 border rounded" />
-                            {errors.ShortDescription && <div className="text-red-600 text-sm">{errors.ShortDescription}</div>}
                             <input type="file" onChange={handleImageChange} className="w-full p-2 border rounded" accept="image/*" />
                         </div>
                         <div className="mt-4 flex justify-end space-x-3">
                             <button onClick={() => { setShowModal(false); setEditingLocation(null); }} className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700">
                                 Cancel
                             </button>
-                            <button onClick={handleSubmit} disabled={saving} className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 disabled:opacity-60">
-                                {saving ? 'Saving...' : 'Save'}
+                            <button onClick={handleSubmit} className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700">
+                                Save
                             </button>
                         </div>
                     </div>
