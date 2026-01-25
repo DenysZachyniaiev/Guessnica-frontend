@@ -45,6 +45,29 @@ i18n.use(initReactI18next).init({
           light: "Light mode",
           language: "Language"
         },
+        theme: {
+          title: "Customize Theme",
+          subtitle: "Choose your preferred color scheme",
+          selectTheme: "Select Theme",
+          customColors: "Custom Colors",
+          primaryColor: "Primary Color",
+          backgroundColor: "Background Color",
+          surfaceColor: "Surface Color",
+          textColor: "Text Color",
+          saveTheme: "Save Theme",
+          applyCustomTheme: "Apply Custom Theme",
+          preview: "Preview",
+          sampleButton: "Sample Button",
+          resetToDefault: "Reset to Default",
+          themes: {
+            default: "Default",
+            highContrast: "High Contrast",
+            darkMode: "Dark Mode",
+            protanopia: "Protanopia Friendly",
+            deuteranopia: "Deuteranopia Friendly",
+            tritanopia: "Tritanopia Friendly"
+          }
+        },
         welcome: {
           title: "Welcome to Guessnica",
           subtitle: "Test your geography skills with daily location challenges",
@@ -149,7 +172,23 @@ i18n.use(initReactI18next).init({
         userPanel: {
           loadingProfile: "Loading your profile...",
           yourProfile: "Your Profile",
-          trackProgress: "Track your progress and view your achievements"
+          trackProgress: "Track your progress and view your achievements",
+          tabs: {
+            overview: "Overview",
+            statistics: "Statistics",
+            history: "History",
+            achievements: "Achievements"
+          },
+          stats: {
+            gamesPlayed: "Games Played",
+            totalScore: "Total Score",
+            accuracy: "Accuracy",
+            bestScore: "Best Score",
+            averageScore: "Average Score",
+            averageTime: "Average Time",
+            totalDistance: "Total Distance",
+            correctGuesses: "Correct Guesses"
+          }
         },
         auth: {
           login: {
@@ -339,6 +378,29 @@ i18n.use(initReactI18next).init({
           light: "Tryb jasny",
           language: "Język"
         },
+        theme: {
+          title: "Dostosuj Motyw",
+          subtitle: "Wybierz preferowaną paletę kolorów",
+          selectTheme: "Wybierz Motyw",
+          customColors: "Niestandardowe Kolory",
+          primaryColor: "Kolor Główny",
+          backgroundColor: "Kolor Tła",
+          surfaceColor: "Kolor Powierzchni",
+          textColor: "Kolor Tekstu",
+          saveTheme: "Zapisz Motyw",
+          applyCustomTheme: "Zastosuj Niestandardowy Motyw",
+          preview: "Podgląd",
+          sampleButton: "Przykładowy Przycisk",
+          resetToDefault: "Przywróć Domyślne",
+          themes: {
+            default: "Domyślny",
+            highContrast: "Wysoki Kontrast",
+            darkMode: "Tryb Ciemny",
+            protanopia: "Przyjazny dla Protanopii",
+            deuteranopia: "Przyjazny dla Deuteranopii",
+            tritanopia: "Przyjazny dla Trytanopii"
+          }
+        },
         welcome: {
           title: "Witaj w Guessnica",
           subtitle: "Przetestuj swoje umiejętności geograficzne z codziennymi wyzwaniami lokalizacyjnymi",
@@ -443,7 +505,23 @@ i18n.use(initReactI18next).init({
         userPanel: {
           loadingProfile: "Ładowanie Twojego profilu...",
           yourProfile: "Twój Profil",
-          trackProgress: "Śledź swoje postępy i przeglądaj swoje osiągnięcia"
+          trackProgress: "Śledź swoje postępy i przeglądaj swoje osiągnięcia",
+          tabs: {
+            overview: "Przegląd",
+            statistics: "Statystyki",
+            history: "Historia",
+            achievements: "Osiągnięcia"
+          },
+          stats: {
+            gamesPlayed: "Rozegrane Gry",
+            totalScore: "Suma Punktów",
+            accuracy: "Dokładność",
+            bestScore: "Najlepszy Wynik",
+            averageScore: "Średni Wynik",
+            averageTime: "Średni Czas",
+            totalDistance: "Całkowita Odległość",
+            correctGuesses: "Poprawne Typy"
+          }
         },
         auth: {
           login: {

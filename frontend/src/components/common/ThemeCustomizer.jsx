@@ -86,7 +86,9 @@ const ThemeCustomizer = ({ isOpen, onClose }) => {
 
     const applyColors = (primary, background, surface, text) => {
         const root = document.documentElement;
+        const body = document.body;
         
+        // Set CSS variables
         root.style.setProperty('--color-primary', primary);
         root.style.setProperty('--color-background', background);
         root.style.setProperty('--color-surface', surface);
@@ -96,6 +98,14 @@ const ThemeCustomizer = ({ isOpen, onClose }) => {
         root.style.setProperty('--color-primary-dark', adjustColor(primary, -20));
         root.style.setProperty('--color-text-secondary', adjustColor(text, 40));
         root.style.setProperty('--color-border', adjustColor(text, 80));
+        
+        // Apply custom theme class to body
+        body.classList.add('custom-theme');
+        
+        // Force reflow to apply changes
+        body.style.display = 'none';
+        body.offsetHeight; // Trigger reflow
+        body.style.display = '';
     };
 
     const adjustColor = (color, amount) => {
@@ -131,7 +141,9 @@ const ThemeCustomizer = ({ isOpen, onClose }) => {
                 </div>
 
                 <div className="mb-8">
-                    <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Accessibility Themes</h3>
+                    <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {t('theme.selectTheme')}
+                    </h3>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         {Object.entries(themes).map(([key, theme]) => (
                             <button
@@ -149,7 +161,7 @@ const ThemeCustomizer = ({ isOpen, onClose }) => {
                                         style={{ backgroundColor: theme.primary }}
                                     />
                                     <span className="font-medium text-gray-900 dark:text-gray-100">
-                                        {theme.name}
+                                        {t(`theme.themes.${key}`)}
                                     </span>
                                 </div>
                                 <div className="flex space-x-1">
@@ -175,11 +187,16 @@ const ThemeCustomizer = ({ isOpen, onClose }) => {
                 </div>
 
                 <div>
-                    <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Custom Theme</h3>
+                    <h2 className={`text-2xl font-bold mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {t('theme.title')}
+                    </h2>
+                    <p className={`mb-6 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                        {t('theme.subtitle')}
+                    </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Primary Color
+                            <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
+                                {t('theme.primaryColor')}
                             </label>
                             <div className="flex items-center space-x-2">
                                 <input
@@ -198,8 +215,8 @@ const ThemeCustomizer = ({ isOpen, onClose }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Background Color
+                            <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
+                                {t('theme.backgroundColor')}
                             </label>
                             <div className="flex items-center space-x-2">
                                 <input
@@ -218,8 +235,8 @@ const ThemeCustomizer = ({ isOpen, onClose }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Surface Color
+                            <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
+                                {t('theme.surfaceColor')}
                             </label>
                             <div className="flex items-center space-x-2">
                                 <input
@@ -238,8 +255,8 @@ const ThemeCustomizer = ({ isOpen, onClose }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Text Color
+                            <label className={`block text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
+                                {t('theme.textColor')}
                             </label>
                             <div className="flex items-center space-x-2">
                                 <input
@@ -263,20 +280,20 @@ const ThemeCustomizer = ({ isOpen, onClose }) => {
                             onClick={applyCustomTheme}
                             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium"
                         >
-                            Apply Custom Theme
+                            {t('theme.applyCustomTheme')}
                         </button>
                     </div>
                 </div>
 
                 <div className="mt-8 p-4 rounded-lg border-2 border-gray-300 dark:border-gray-600" style={{ backgroundColor: customColors.background }}>
-                    <h4 className="font-bold mb-2" style={{ color: customColors.text }}>Preview</h4>
+                    <h4 className="font-bold mb-2" style={{ color: customColors.text }}>{t('theme.preview')}</h4>
                     <div className="p-3 rounded" style={{ backgroundColor: customColors.surface }}>
-                        <p style={{ color: customColors.text }}>This is how your theme will look.</p>
+                        <p style={{ color: customColors.text }}>{t('theme.preview')}</p>
                         <button
                             className="mt-2 px-4 py-2 rounded text-white"
                             style={{ backgroundColor: customColors.primary }}
                         >
-                            Sample Button
+                            {t('theme.sampleButton')}
                         </button>
                     </div>
                 </div>
