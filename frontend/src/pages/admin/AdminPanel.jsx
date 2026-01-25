@@ -36,7 +36,7 @@ export default function AdminPanel() {
         try {
             const token = localStorage.getItem('jwt');
             if (!token) {
-                setError('No authentication token found');
+                setError(t('admin.noAuthTokenFound'));
                 setLoading(false);
                 return;
             }
@@ -152,7 +152,7 @@ export default function AdminPanel() {
 
         } catch (err) {
             console.error('Admin fetch error:', err);
-            setError('Failed to fetch admin data');
+            setError(t('admin.fetchDataFailed'));
         } finally {
             setLoading(false);
         }
@@ -192,7 +192,7 @@ export default function AdminPanel() {
                         <p className={`text-lg transition-colors duration-300 ${
                             darkMode ? 'text-gray-300' : 'text-gray-700'
                         }`}>
-                            Manage and monitor your Guessnica platform
+                            {t('admin.subtitle')}
                         </p>
                     </div>
 
@@ -312,7 +312,7 @@ export default function AdminPanel() {
                                                 {riddle.timesAnswered}
                                             </div>
                                             <div className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                Answers
+                                                {t('admin.answers')}
                                             </div>
                                         </div>
                                         <div className={`p-3 rounded-lg ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
@@ -320,7 +320,7 @@ export default function AdminPanel() {
                                                 {Math.round(riddle.avgScore)}
                                             </div>
                                             <div className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                Avg Score
+                                                {t('admin.avgScore')}
                                             </div>
                                         </div>
                                         <div className={`p-3 rounded-lg ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
@@ -328,7 +328,7 @@ export default function AdminPanel() {
                                                 {Math.round(riddle.avgDistanceMeters)}m
                                             </div>
                                             <div className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                Avg Distance
+                                                {t('admin.avgDistance')}
                                             </div>
                                         </div>
                                         <div className={`p-3 rounded-lg ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
@@ -336,7 +336,7 @@ export default function AdminPanel() {
                                                 {Math.round(riddle.avgTimeSeconds)}s
                                             </div>
                                             <div className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                Avg Time
+                                                {t('admin.avgTime')}
                                             </div>
                                         </div>
                                     </div>
@@ -367,7 +367,7 @@ export default function AdminPanel() {
                                                 {user.displayName}
                                             </h3>
                                             <p className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                User ID: {user.userId}
+                                                {t('admin.userId')}: {user.userId}
                                             </p>
                                         </div>
                                     </div>
@@ -378,7 +378,7 @@ export default function AdminPanel() {
                                                 {user.riddlesAnswered}
                                             </div>
                                             <div className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                Riddles
+                                                {t('admin.riddles')}
                                             </div>
                                         </div>
                                         <div className={`p-3 rounded-lg ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
@@ -386,7 +386,7 @@ export default function AdminPanel() {
                                                 {user.totalScore}
                                             </div>
                                             <div className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                Total
+                                                {t('admin.total')}
                                             </div>
                                         </div>
                                         <div className={`p-3 rounded-lg ${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
@@ -394,7 +394,7 @@ export default function AdminPanel() {
                                                 {Math.round(user.averageScore)}
                                             </div>
                                             <div className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                Average
+                                                {t('admin.average')}
                                             </div>
                                         </div>
                                     </div>
@@ -413,7 +413,7 @@ export default function AdminPanel() {
                                 <table className="w-full">
                                     <thead className={darkMode ? 'bg-gray-900/50' : 'bg-gray-50'}>
                                     <tr>
-                                        {['User', 'Riddle', 'Latitude', 'Longitude', 'Distance (m)', 'Time (s)', 'Score'].map((header) => (
+                                        {[t('admin.user'), t('admin.riddle'), t('admin.latitude'), t('admin.longitude'), t('admin.distance'), t('admin.time'), t('admin.score')].map((header) => (
                                             <th key={header} className={`px-6 py-4 text-left text-xs font-black uppercase tracking-wider ${
                                                 darkMode ? 'text-gray-400' : 'text-gray-600'
                                             }`}>
