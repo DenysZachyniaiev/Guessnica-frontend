@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Circle, useMapEvents } from 'react-leaflet';
+import React, { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Circle } from 'react-leaflet';
 import { useTranslation } from 'react-i18next';
 import { Icon } from "leaflet";
 import Lightbox from "yet-another-react-lightbox";
@@ -235,31 +235,6 @@ export default function Guess() {
                     </p>
                 </div>
 
-                {/* Riddle Description Card */}
-                <div className={`mb-6 p-6 rounded-2xl shadow-xl transition-colors duration-300 ${
-                    darkMode
-                        ? 'bg-gray-800/50 border-2 border-gray-700'
-                        : 'bg-white border-2 border-gray-200'
-                }`}>
-                    <div className="flex items-start gap-4">
-                        <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${
-                            darkMode ? 'bg-blue-600/20' : 'bg-sky-100'
-                        }`}>
-                            <svg className={`w-6 h-6 ${darkMode ? 'text-blue-400' : 'text-sky-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <div className="flex-1">
-                            <h3 className={`text-lg font-bold mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                                Riddle Clue
-                            </h3>
-                            <p className={`text-xl font-medium italic ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                                "{riddle.description}"
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
                 {/* Main Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                     {/* Image */}
@@ -304,8 +279,11 @@ export default function Guess() {
                                 style={{ height: "100%", width: "100%" }}
                             >
                                 <TileLayer
-                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                    url={darkMode
+                                        ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                                        : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                                    }
+                                    attribution='&copy; <a href="https://carto.com/">CARTO</a>'
                                 />
 
                                 <LocationMarker
