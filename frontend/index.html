@@ -1,20 +1,32 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/src/assets/logo_2.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Guessnica</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script>
-        window.REACT_APP_FACEBOOK_APP_ID = "1177693011114372";
-    </script>
-    <script 
-            async defer crossorigin="anonymous"
-            src="https://connect.facebook.net/en_US/sdk.js">
-    </script>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+</head>
+<body>
+<div id="root"></div>
+<script>
+    window.REACT_APP_FACEBOOK_APP_ID = "1462949434810709";
+
+    // Inicjalizacja Facebook SDK
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId      : window.REACT_APP_FACEBOOK_APP_ID,
+            cookie     : true,
+            xfbml      : true,
+            version    : 'v21.0'  // Aktualna wersja API
+        });
+
+        FB.AppEvents.logPageView();
+    };
+</script>
+<script
+        async defer crossorigin="anonymous"
+        src="https://connect.facebook.net/en_US/sdk.js">
+</script>
+<script type="module" src="/src/main.jsx"></script>
+</body>
 </html>
